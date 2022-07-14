@@ -10,8 +10,7 @@
     "main": "target/wasm32-unknown-unknown/release/jest_workaround.wasm",
     "scripts": {
         "test": "jest",
-        "prepublishOnly": "cargo build --release",
-        "build": "cargo build --release --target wasm32-unknown-unknown"
+        "prepublishOnly": "cargo build --release --target wasm32-unknown-unknown"
     },
     "files": [
         "src",
