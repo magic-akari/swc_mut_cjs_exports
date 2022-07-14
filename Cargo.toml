@@ -1,0 +1,18 @@
+[package]
+name = "jest_workaround"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+indexmap = "1"
+serde = "1"
+swc_common = "0.24"
+swc_plugin = "0.80"
+
+[dev-dependencies]
+swc_ecma_transforms_base = "0.98"
+swc_ecma_transforms_testing = "0.100"
+testing = "0.26"
