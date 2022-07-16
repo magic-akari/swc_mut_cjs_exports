@@ -32,7 +32,10 @@ Make sure that `module.type` is `commonjs` since this plugin does not touch non-
 1. When do I need this?
 
 The swc-transformed CJS is compliant with the ESM specification. This means that exports is immutable.
-I need to use swc to get transformed code which conforms to the ESM specification, but I need to use jest in a CJS environment to test it.
+
+I need to use swc to get transformed code which conforms to the ESM specification.
+But I need to use jest in a CJS environment to test it.
+
 The immutable exports is difficult to use for jest testing.
 This plugin will transform the export statement into mutable exports.
 
@@ -41,7 +44,9 @@ This plugin will transform the export statement into mutable exports.
 Yes.
 
 If I can run jest in an ESM environment, then I don't even need swc, or just use swc to transform TypeScript syntax.
-There may be some issues with running jest in ESM, but they will be resolved over time. tracked by [facebook/jest#9430](https://github.com/facebook/jest/issues/9430).
+
+There may be some issues with running jest in ESM, but they will be resolved over time.
+Tracked by [facebook/jest#9430](https://github.com/facebook/jest/issues/9430).
 
 Or, I don't need the behavior of ESM.
 I can get the CJS behavior of exports by using the CJS syntax.
