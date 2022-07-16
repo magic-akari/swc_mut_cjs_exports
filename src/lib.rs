@@ -102,7 +102,6 @@ impl TransformVisitor {
     }
 
     fn exports(&self) -> Ident {
-        // TODO: https://github.com/swc-project/swc/issues/4803
         quote_ident!(DUMMY_SP.apply_mark(self.unresolved_mark), "exports")
     }
 }

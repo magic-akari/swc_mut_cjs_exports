@@ -164,7 +164,7 @@ impl VisitMut for LocalExportStrip {
             DefaultDecl::Class(class_expr) => {
                 if let Some(ident) = class_expr.ident.clone() {
                     self.export.insert((js_word!("default"), n.span), ident);
-                };
+                }
             }
             DefaultDecl::Fn(fn_expr) => {
                 if let Some(ident) = fn_expr.ident.clone() {
