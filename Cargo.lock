@@ -1459,9 +1459,9 @@ dependencies = [
 
 [[package]]
 name = "swc_plugin"
-version = "0.80.2"
+version = "0.81.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c43505606704465492ab14fccdd74f7102b1d4f865484c79288a973dd8de1977"
+checksum = "513c5db584ecf8dc548eb5e06fa318d5b56625afc6c24b6a3c140e69eee8300d"
 dependencies = [
  "swc_atoms",
  "swc_common",
@@ -1472,9 +1472,9 @@ dependencies = [
 
 [[package]]
 name = "swc_plugin_macro"
-version = "0.6.0"
+version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6e06c19459703b5e252d2f29405467ade893d7c1053103958872ba0b43262527"
+checksum = "7888f999cdf25ace0c1efeb614f29c2a2490153a82bf41c90e292522000388dc"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1483,9 +1483,9 @@ dependencies = [
 
 [[package]]
 name = "swc_plugin_proxy"
-version = "0.12.1"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5b852bf0bc0330134bbac3f146a3fc23fd30064c9c2ad738162a3ebc86267082"
+checksum = "5c1e02f805ee431ba7f9eb9823c5692fa260c249f280799b214498e66bfbfbbd"
 dependencies = [
  "better_scoped_tls",
  "bytecheck",

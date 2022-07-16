@@ -11,7 +11,7 @@ fn tr() -> impl Fold {
 
     chain!(
         resolver(unresolved_mark, top_level_mark, false),
-        as_folder(TransformVisitor::default()),
+        as_folder(TransformVisitor::new(unresolved_mark)),
     )
 }
 

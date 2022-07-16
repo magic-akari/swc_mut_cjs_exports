@@ -13,7 +13,7 @@ crate-type = ["cdylib", "lib"]
 indexmap = "1"
 serde = "1"
 swc_common = "0.24"
-swc_plugin = "0.80"
+swc_plugin = "0.81"
 
 [dev-dependencies]
 swc_ecma_transforms_base = "0.98"

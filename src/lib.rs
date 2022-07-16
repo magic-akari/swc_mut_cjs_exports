@@ -2,7 +2,7 @@ mod local_export_strip;
 mod utils;
 
 use local_export_strip::LocalExportStrip;
-use swc_common::{collections::AHashSet, util::take::Take};
+use swc_common::{collections::AHashSet, util::take::Take, Mark, DUMMY_SP};
 use swc_plugin::{
     ast::*,
     plugin_transform,
@@ -11,8 +11,10 @@ use swc_plugin::{
 };
 use utils::emit_export_stmts;
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 pub struct TransformVisitor {
+    unresolved_mark: Mark,
+
     export_decl_id: AHashSet<Id>,
 }
 
@@ -92,13 +94,22 @@ impl VisitMut for TransformVisitor {
 }
 
 impl TransformVisitor {
+    pub fn new(unresolved_mark: Mark) -> Self {
+        Self {
+            unresolved_mark,
+            export_decl_id: Default::default(),
+        }
+    }
+
     fn exports(&self) -> Ident {
         // TODO: https://github.com/swc-project/swc/issues/4803
-        quote_ident!("exports")
+        quote_ident!(DUMMY_SP.apply_mark(self.unresolved_mark), "exports")
     }
 }
 
 #[plugin_transform]
-pub fn process_transform(program: Program, _metadata: TransformPluginProgramMetadata) -> Program {
-    program.fold_with(&mut as_folder(TransformVisitor::default()))
+pub fn process_transform(program: Program, metadata: TransformPluginProgramMetadata) -> Program {
+    program.fold_with(&mut as_folder(TransformVisitor::new(
+        metadata.unresolved_mark,
+    )))
 }
