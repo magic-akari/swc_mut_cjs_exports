@@ -1,21 +1,31 @@
 {
     "name": "jest_workaround",
     "version": "0.1.0",
-    "description": "[swc plugin]workaround for jest",
+    "description": "[SWC plugin] workaround for jest",
     "author": "magic-akari <akari.ccino@gmail.com>",
     "license": "MIT",
     "keywords": [
-        "swc-plugin"
+        "swc-plugin",
+        "jest"
     ],
-    "main": "target/wasm32-unknown-unknown/release/jest_workaround.wasm",
     "scripts": {
         "test": "jest",
         "prepublishOnly": "cargo build --release --target wasm32-unknown-unknown"
     },
+    "packageManager": "pnpm@7.5.1",
+    "main": "target/wasm32-unknown-unknown/release/jest_workaround.wasm",
     "files": [
         "src",
         "target/wasm32-unknown-unknown/release/jest_workaround.wasm"
     ],
+    "homepage": "https://github.com/magic-akari/jest_workaround#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/magic-akari/jest_workaround.git"
+    },
+    "bugs": {
+        "url": "https://github.com/magic-akari/jest_workaround/issues"
+    },
     "devDependencies": {
         "@swc/core": "^1.2.215",
         "@swc/jest": "^0.2.21",

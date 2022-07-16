@@ -5,6 +5,9 @@ edition = "2021"
 authors = ["magic-akari <akari.ccino@gmail.com>"]
 description = "[swc plugin]workaround for jest"
 license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/magic-akari/jest_workaround"
+repository = "https://github.com/magic-akari/jest_workaround"
 
 [lib]
 crate-type = ["cdylib", "lib"]
