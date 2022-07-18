@@ -1,0 +1,40 @@
+name: Test
+
+on: [push, pull_request]
+
+env:
+    CARGO_INCREMENTAL: 0
+    RUST_LOG: "debug"
+    DIFF: 0
+    RUST_MIN_STACK: 4194304
+    NODE_ENV: "development"
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Install Rust
+              uses: actions-rs/toolchain@v1
+              with:
+                  profile: minimal
+                  target: wasm32-unknown-unknown
+
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: "16"
+                  cache: "pnpm"
+
+            - uses: pnpm/action-setup@v2.2.2
+              with:
+                  run_install: |
+                      - recursive: true
+                        args: [--ignore-scripts, --frozen-lockfile]
+
+            - name: Run cargo check for all targets
+              run: cargo check --color always --all --all-targets
+
+            - run: cargo build --target wasm32-unknown-unknown
+            - run: cargo test
+            - run: pnpm test
