@@ -34,9 +34,9 @@ jobs:
             - name: Run cargo check for all targets
               run: cargo check --color always --all --all-targets
 
-            - run: cargo build --release --target wasm32-unknown-unknown
             - run: cargo test --release
             - run: pnpm test
+            - run: cargo build --release --target wasm32-unknown-unknown
 
             - name: publish crates
               run: cargo publish --token ${CRATES_TOKEN}
@@ -46,4 +46,4 @@ jobs:
             - name: publish npmjs
               run: npm publish
               env:
-                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
