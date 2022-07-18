@@ -1,6 +1,6 @@
 [package]
 name = "jest_workaround"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["magic-akari <akari.ccino@gmail.com>"]
 description = "[swc plugin]workaround for jest"
