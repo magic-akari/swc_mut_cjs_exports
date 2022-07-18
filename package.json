@@ -1,6 +1,6 @@
 {
     "name": "jest_workaround",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "description": "[SWC plugin] workaround for jest",
     "author": "magic-akari <akari.ccino@gmail.com>",
     "license": "MIT",
