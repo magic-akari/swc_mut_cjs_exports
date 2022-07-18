@@ -1,5 +1,9 @@
 # [SWC plugin] workaround for jest
 
+[![Test](https://github.com/magic-akari/jest_workaround/actions/workflows/test.yml/badge.svg)](https://github.com/magic-akari/jest_workaround/actions/workflows/test.yml)
+[![Crates.io](https://img.shields.io/crates/v/jest_workaround)](https://crates.io/crates/jest_workaround)
+[![npm](https://img.shields.io/npm/v/jest_workaround)](https://www.npmjs.com/package/jest_workaround)
+
 This is a SWC plugin to handle jest compatibility issues.
 
 ## usage
