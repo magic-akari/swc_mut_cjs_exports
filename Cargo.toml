@@ -24,4 +24,4 @@ swc_ecma_transforms_testing = "0.100"
 testing = "0.26"
 
 [profile.release]
-strip = true
+strip = "debuginfo"
