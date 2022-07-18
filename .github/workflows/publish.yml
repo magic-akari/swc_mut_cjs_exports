@@ -1,0 +1,49 @@
+name: Publish
+
+on:
+    create:
+        tags:
+            - v*
+
+env:
+    CARGO_INCREMENTAL: 0
+    CARGO_PROFILE_RELEASE_LTO: "fat"
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Install Rust
+              uses: actions-rs/toolchain@v1
+              with:
+                  profile: minimal
+                  target: wasm32-unknown-unknown
+
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: "16"
+
+            - uses: pnpm/action-setup@v2.2.2
+              with:
+                  run_install: |
+                      - recursive: true
+                        args: [--ignore-scripts, --frozen-lockfile]
+
+            - name: Run cargo check for all targets
+              run: cargo check --color always --all --all-targets
+
+            - run: cargo build --release --target wasm32-unknown-unknown
+            - run: cargo test --release
+            - run: pnpm test
+
+            - name: publish crates
+              run: cargo publish --token ${CRATES_TOKEN}
+              env:
+                  CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
+
+            - name: publish npmjs
+              run: npm publish
+              env:
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
