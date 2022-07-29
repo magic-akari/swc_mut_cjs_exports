@@ -7,7 +7,7 @@ use swc_plugin::{
     ast::*,
     plugin_transform,
     utils::{quote_ident, ExprFactory, IntoIndirectCall},
-    TransformPluginProgramMetadata,
+    metadata::TransformPluginProgramMetadata,
 };
 use utils::emit_export_stmts;
 

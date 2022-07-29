@@ -28,12 +28,12 @@
         "url": "https://github.com/magic-akari/jest_workaround/issues"
     },
     "devDependencies": {
-        "@swc/core": "^1.2.218",
+        "@swc/core": "^1.2.220",
         "@swc/jest": "^0.2.22",
         "jest": "^28.1.3"
     },
     "peerDependencies": {
-        "@swc/core": "^1.2.218",
+        "@swc/core": "^1.2.220",
         "@swc/jest": "^0.2.22"
     }
 }
