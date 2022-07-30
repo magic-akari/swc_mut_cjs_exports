@@ -6,30 +6,33 @@
 
 This is a SWC plugin to handle jest compatibility issues.
 
+This SWC plugin should be used with `@swc/jest`.
+
 ## usage
 
 install
 
 ```bash
-npm i jest_workaround
+npm i -D jest @swc/core @swc/jest jest_workaround
 ```
 
-swcrc config
+```js
+// jest.config.js
+const fs = require("node:fs");
 
-```json
-{
-  "jsc": {
-    "experimental": {
-      "plugins": [["jest_workaround", {}]]
-    }
+const swcrc = JSON.parse(fs.readFileSync(".swcrc", "utf8"));
+
+// If you have other plugins, change this line.
+((swcrc.jsc ??= {}).experimental ??= {}).plugins = [["jest_workaround", {}]];
+
+module.exports = {
+  transform: {
+    "^.+\\.(t|j)sx?$": ["@swc/jest", swcrc],
   },
-  "module": {
-    "type": "commonjs"
-  }
-}
+};
 ```
 
-Make sure that `module.type` is `commonjs` since this plugin does not touch non-workaround parts, such as import statements.
+Make sure that `module.type` is `commonjs` in your `.swcrc` since this plugin does not touch non-workaround parts, such as import statements.
 
 ## FAQ
 
