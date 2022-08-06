@@ -1,8 +1,10 @@
 use indexmap::IndexMap;
-use swc_plugin::{
+use swc_common::{util::take::Take, Span};
+use swc_core::{
     ast::*,
-    syntax_pos::Span,
-    utils::{find_pat_ids, take::Take, ExprFactory},
+    atoms::{js_word, JsWord},
+    utils::{find_pat_ids, ExprFactory},
+    visit::{noop_visit_mut_type, VisitMut, VisitMutWith},
 };
 
 type Export = IndexMap<(JsWord, Span), Ident>;

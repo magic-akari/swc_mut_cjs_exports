@@ -1,28 +1,39 @@
 [package]
-name = "jest_workaround"
-version = "0.1.5"
-edition = "2021"
-authors = ["magic-akari <akari.ccino@gmail.com>"]
+authors     = ["magic-akari <akari.ccino@gmail.com>"]
 description = "[SWC plugin] workaround for jest"
-license = "MIT"
-readme = "README.md"
-homepage = "https://github.com/magic-akari/jest_workaround"
-repository = "https://github.com/magic-akari/jest_workaround"
-keywords = ["swc-plugin", "jest"]
+edition     = "2021"
+homepage    = "https://github.com/magic-akari/jest_workaround"
+keywords    = ["swc-plugin", "jest"]
+license     = "MIT"
+name        = "jest_workaround"
+readme      = "README.md"
+repository  = "https://github.com/magic-akari/jest_workaround"
+version     = "0.1.5"
 
 [lib]
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-indexmap = "1"
-serde = "1"
-swc_common = "0.26"
-swc_plugin = "0.88"
+indexmap = "1.9.1"
+serde = "1.0.142"
+swc_common = "0.26.0"
+swc_core = { version = "0.4.0", features = [
+    "ast",
+    "quote",
+    "visit",
+    "swc_plugin",
+    "utils",
+    "swc_atoms",
+    "plugin_transform",
+    "swc_ecma_parser",
+    "common",
+] }
+swc_plugin = "0.89.0"
 
 [dev-dependencies]
-swc_ecma_transforms_base = "0.102"
-swc_ecma_transforms_testing = "0.104"
-testing = "0.28"
+swc_ecma_transforms_base    = "0.102.1"
+swc_ecma_transforms_testing = "0.104.0"
+testing                     = "0.28.0"
 
 [profile.release]
 strip = "debuginfo"

@@ -3,12 +3,13 @@ mod utils;
 
 use local_export_strip::LocalExportStrip;
 use swc_common::{collections::AHashSet, util::take::Take, Mark, DUMMY_SP};
-use swc_plugin::{
+use swc_core::{
     ast::*,
-    plugin_transform,
+    plugin::{metadata::TransformPluginProgramMetadata, plugin_transform},
     utils::{quote_ident, ExprFactory, IntoIndirectCall},
-    metadata::TransformPluginProgramMetadata,
+    visit::{as_folder, noop_visit_mut_type, FoldWith, VisitMut, VisitMutWith},
 };
+
 use utils::emit_export_stmts;
 
 #[derive(Debug)]
