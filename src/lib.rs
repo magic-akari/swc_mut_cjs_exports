@@ -66,12 +66,27 @@ impl VisitMut for TransformVisitor {
         match n {
             Expr::Ident(ref_ident) => {
                 if self.export_decl_id.contains(&ref_ident.to_id()) {
-                    *n = self.exports().make_member(ref_ident.take())
+                    *n = self.exports().make_member(ref_ident.take());
                 }
             }
 
             _ => n.visit_mut_children_with(self),
         };
+    }
+
+    fn visit_mut_assign_expr(&mut self, n: &mut AssignExpr) {
+        match &mut n.left {
+            PatOrExpr::Pat(pat) if pat.is_ident() => {
+                let ident = pat.take().expect_ident().id;
+
+                *pat = Box::new(Pat::Expr(Box::new(self.exports().make_member(ident))));
+            }
+            _ => {
+                n.left.visit_mut_children_with(self);
+            }
+        }
+
+        n.right.visit_mut_children_with(self);
     }
 
     fn visit_mut_callee(&mut self, n: &mut Callee) {
