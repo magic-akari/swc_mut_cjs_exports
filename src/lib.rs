@@ -29,10 +29,10 @@ impl VisitMut for TransformVisitor {
         let LocalExportStrip {
             has_export_assign,
             export,
-            ..
+            export_decl_id,
         } = strip;
 
-        self.export_decl_id = export.values().map(|ident| ident.to_id()).collect();
+        self.export_decl_id = export_decl_id;
 
         let mut stmts: Vec<ModuleItem> = Vec::with_capacity(n.len() + 1);
 

@@ -1,5 +1,5 @@
 use indexmap::IndexMap;
-use swc_common::{util::take::Take, Span};
+use swc_common::{collections::AHashSet, util::take::Take, Span};
 use swc_core::{
     ast::*,
     atoms::{js_word, JsWord},
@@ -13,6 +13,7 @@ type Export = IndexMap<(JsWord, Span), Ident>;
 pub(crate) struct LocalExportStrip {
     pub(crate) has_export_assign: bool,
     pub(crate) export: Export,
+    pub(crate) export_decl_id: AHashSet<Id>,
 }
 
 impl VisitMut for LocalExportStrip {
@@ -94,12 +95,15 @@ impl VisitMut for LocalExportStrip {
             }
 
             Decl::Var(v) => {
-                self.export
-                    .extend(find_pat_ids::<_, Ident>(&v.decls).into_iter().map(|id| {
-                        let ident = id.clone();
+                let ids = find_pat_ids::<_, Ident>(&v.decls);
 
-                        ((id.sym, id.span), ident)
-                    }));
+                self.export_decl_id.extend(ids.iter().map(Ident::to_id));
+
+                self.export.extend(ids.into_iter().map(|id| {
+                    let ident = id.clone();
+
+                    ((id.sym, id.span), ident)
+                }));
             }
             _ => {}
         };
