@@ -62,6 +62,21 @@ impl VisitMut for TransformVisitor {
         *n = stmts;
     }
 
+    fn visit_mut_prop(&mut self, n: &mut Prop) {
+        match n {
+            Prop::Shorthand(ref_ident) => {
+                if self.export_decl_id.contains(&ref_ident.to_id()) {
+                    *n = KeyValueProp {
+                        key: ref_ident.clone().into(),
+                        value: Box::new(self.exports().make_member(ref_ident.take())),
+                    }
+                    .into()
+                }
+            }
+            _ => n.visit_mut_children_with(self),
+        }
+    }
+
     fn visit_mut_expr(&mut self, n: &mut Expr) {
         match n {
             Expr::Ident(ref_ident) => {
@@ -85,6 +100,20 @@ impl VisitMut for TransformVisitor {
             _ => {
                 n.visit_mut_children_with(self);
             }
+        }
+    }
+
+    fn visit_mut_tagged_tpl(&mut self, n: &mut TaggedTpl) {
+        let is_indirect = n
+            .tag
+            .as_ident()
+            .map(|ident| self.export_decl_id.contains(&ident.to_id()))
+            .unwrap_or_default();
+
+        n.visit_mut_children_with(self);
+
+        if is_indirect {
+            *n = n.take().into_indirect()
         }
     }
 
