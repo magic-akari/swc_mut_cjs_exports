@@ -74,19 +74,18 @@ impl VisitMut for TransformVisitor {
         };
     }
 
-    fn visit_mut_assign_expr(&mut self, n: &mut AssignExpr) {
-        match &mut n.left {
+    fn visit_mut_pat_or_expr(&mut self, n: &mut PatOrExpr) {
+        match n {
             PatOrExpr::Pat(pat) if pat.is_ident() => {
-                let ident = pat.take().expect_ident().id;
-
-                *pat = Box::new(Pat::Expr(Box::new(self.exports().make_member(ident))));
+                let ref_ident = pat.clone().expect_ident().id;
+                if self.export_decl_id.contains(&ref_ident.to_id()) {
+                    *n = PatOrExpr::Expr(Box::new(self.exports().make_member(ref_ident)));
+                }
             }
             _ => {
-                n.left.visit_mut_children_with(self);
+                n.visit_mut_children_with(self);
             }
         }
-
-        n.right.visit_mut_children_with(self);
     }
 
     fn visit_mut_callee(&mut self, n: &mut Callee) {
