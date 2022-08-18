@@ -89,20 +89,6 @@ impl VisitMut for TransformVisitor {
         };
     }
 
-    fn visit_mut_pat_or_expr(&mut self, n: &mut PatOrExpr) {
-        match n {
-            PatOrExpr::Pat(pat) if pat.is_ident() => {
-                let ref_ident = pat.clone().expect_ident().id;
-                if self.export_decl_id.contains(&ref_ident.to_id()) {
-                    *n = PatOrExpr::Expr(Box::new(self.exports().make_member(ref_ident)));
-                }
-            }
-            _ => {
-                n.visit_mut_children_with(self);
-            }
-        }
-    }
-
     fn visit_mut_tagged_tpl(&mut self, n: &mut TaggedTpl) {
         let is_indirect = n
             .tag

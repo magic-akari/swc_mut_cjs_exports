@@ -23,7 +23,7 @@ let _ = {
     b,
     c
 };
-exports.a = function() {};
+a = function() {};
 b = function() {};
 (0, exports.a)``;
 b``;

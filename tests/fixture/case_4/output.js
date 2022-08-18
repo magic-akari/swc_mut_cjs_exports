@@ -16,7 +16,7 @@ function foo() {
     return 3;
 }
 let bar = function() {
-    exports.bar = ()=>1;
+    bar = ()=>1;
     exports.bar.bar = ()=>(0, exports.bar)();
     return 3;
 };
