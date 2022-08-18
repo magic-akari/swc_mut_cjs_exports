@@ -1,4 +1,4 @@
-name: Cron Test
+name: with @swc/core@latest
 
 on:
     schedule:
