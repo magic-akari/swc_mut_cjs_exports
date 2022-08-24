@@ -1,6 +1,6 @@
 {
     "name": "jest_workaround",
-    "version": "0.1.8",
+    "version": "0.1.9",
     "description": "[SWC plugin] workaround for jest",
     "author": "magic-akari <akari.ccino@gmail.com>",
     "license": "MIT",
@@ -13,7 +13,7 @@
         "build": "cargo build --target wasm32-unknown-unknown",
         "prepublishOnly": "cargo build --release --target wasm32-unknown-unknown"
     },
-    "packageManager": "pnpm@7.6.0",
+    "packageManager": "pnpm@7.9.4",
     "main": "target/wasm32-unknown-unknown/release/jest_workaround.wasm",
     "files": [
         "src",
