@@ -21,9 +21,20 @@ jobs:
                   profile: minimal
                   target: wasm32-unknown-unknown
 
+            - name: Cache cargo registry
+              uses: actions/cache@v3
+              with:
+                  path: |
+                      ~/.cargo/registry/index/
+                      ~/.cargo/registry/cache/
+                      ~/.cargo/git/db/
+                      .cargo-cache/
+                  key: ${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
+
             - uses: actions/setup-node@v3
               with:
                   node-version: "16"
+                  cache: "pnpm"
 
             - uses: pnpm/action-setup@v2.2.2
               with:
