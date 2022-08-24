@@ -31,20 +31,19 @@ jobs:
                       .cargo-cache/
                   key: ${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
 
+            - name: Run cargo check for all targets
+              run: cargo check --color always --all --all-targets
+
+            - run: cargo test
+
+            # test in node
+            - run: cargo build --target wasm32-unknown-unknown
+
+            - uses: pnpm/action-setup@v2.2.2
             - uses: actions/setup-node@v3
               with:
                   node-version: "16"
                   cache: "pnpm"
 
-            - uses: pnpm/action-setup@v2.2.2
-              with:
-                  run_install: |
-                      - recursive: true
-                        args: [--ignore-scripts, --frozen-lockfile]
-
-            - name: Run cargo check for all targets
-              run: cargo check --color always --all --all-targets
-
-            - run: cargo test
-            - run: cargo build --target wasm32-unknown-unknown
+            - run: pnpm i --ignore-scripts --frozen-lockfile
             - run: pnpm test

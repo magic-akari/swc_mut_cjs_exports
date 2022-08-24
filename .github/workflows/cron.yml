@@ -33,13 +33,13 @@ jobs:
                       .cargo-cache/
                   key: ${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
 
+            - run: cargo build --target wasm32-unknown-unknown
+
+            - uses: pnpm/action-setup@v2.2.2
             - uses: actions/setup-node@v3
               with:
                   node-version: "16"
                   cache: "pnpm"
 
-            - uses: pnpm/action-setup@v2.2.2
-
             - run: pnpm add -D --ignore-scripts @swc/core@latest @swc/jest@latest jest@latest
-            - run: cargo build --target wasm32-unknown-unknown
             - run: pnpm test
