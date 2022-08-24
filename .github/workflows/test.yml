@@ -29,6 +29,7 @@ jobs:
                       ~/.cargo/registry/cache/
                       ~/.cargo/git/db/
                       .cargo-cache/
+                      target
                   key: ${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
 
             - name: Run cargo check for all targets
