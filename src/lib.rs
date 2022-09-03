@@ -2,14 +2,15 @@ mod local_export_strip;
 mod utils;
 
 use local_export_strip::LocalExportStrip;
-use swc_common::{collections::AHashSet, util::take::Take, Mark, DUMMY_SP};
 use swc_core::{
-    ast::*,
-    plugin::{metadata::TransformPluginProgramMetadata, plugin_transform},
-    utils::{quote_ident, ExprFactory, IntoIndirectCall},
-    visit::{as_folder, noop_visit_mut_type, FoldWith, VisitMut, VisitMutWith},
+    common::{collections::AHashSet, util::take::Take, Mark, DUMMY_SP},
+    ecma::{
+        ast::*,
+        utils::{quote_ident, ExprFactory, IntoIndirectCall},
+        visit::{as_folder, noop_visit_mut_type, FoldWith, VisitMut, VisitMutWith},
+    },
+    plugin::{plugin_transform, proxies::TransformPluginProgramMetadata},
 };
-
 use utils::emit_export_stmts;
 
 #[derive(Debug)]

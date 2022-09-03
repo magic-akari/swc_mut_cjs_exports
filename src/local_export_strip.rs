@@ -1,10 +1,12 @@
 use indexmap::IndexMap;
-use swc_common::{collections::AHashSet, util::take::Take, Span};
 use swc_core::{
-    ast::*,
-    atoms::{js_word, JsWord},
-    utils::{find_pat_ids, ExprFactory},
-    visit::{noop_visit_mut_type, VisitMut, VisitMutWith},
+    common::{collections::AHashSet, util::take::Take, Span},
+    ecma::{
+        ast::*,
+        atoms::{js_word, JsWord},
+        utils::{find_pat_ids, ExprFactory},
+        visit::{noop_visit_mut_type, VisitMut, VisitMutWith},
+    },
 };
 
 type Export = IndexMap<(JsWord, Span), Ident>;

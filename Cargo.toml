@@ -16,24 +16,19 @@ crate-type = ["cdylib", "lib"]
 [dependencies]
 indexmap = "1.9.1"
 serde = "1.0.144"
-swc_common = "0.27.13"
-swc_core = { version = "0.11.7", features = [
-    "ast",
-    "quote",
-    "visit",
+swc_core = { version = "0.20.2", features = [
+    "ecma_ast",
+    "ecma_visit",
     "swc_plugin",
-    "utils",
+    "ecma_utils",
     "swc_atoms",
     "plugin_transform",
-    "swc_ecma_parser",
-    "common",
 ] }
-swc_plugin = "0.90.0"
+
 
 [dev-dependencies]
-swc_ecma_transforms_base    = "0.104.1"
-swc_ecma_transforms_testing = "0.106.0"
-testing                     = "0.29.4"
+swc_core = { version = "0.20.2", features = ["testing_transform"] }
+testing  = "0.29.4"
 
 [profile.release]
 strip = "debuginfo"

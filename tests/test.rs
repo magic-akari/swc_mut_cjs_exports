@@ -1,9 +1,15 @@
 use jest_workaround::TransformVisitor;
 use std::path::PathBuf;
-use swc_common::{chain, Mark};
-use swc_core::visit::{as_folder, Fold};
-use swc_ecma_transforms_base::resolver;
-use swc_ecma_transforms_testing::{test, test_fixture};
+use swc_core::{
+    common::{chain, Mark},
+    ecma::{
+        transforms::{
+            resolver,
+            testing::{test, test_fixture},
+        },
+        visit::{as_folder, Fold},
+    },
+};
 
 fn tr() -> impl Fold {
     let unresolved_mark = Mark::new();

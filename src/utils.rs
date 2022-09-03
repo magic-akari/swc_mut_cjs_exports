@@ -1,11 +1,12 @@
-use swc_common::{Span, Spanned, DUMMY_SP};
-
 use swc_core::{
-    ast::*,
-    atoms::{js_word, JsWord},
-    utils::{
-        is_valid_prop_ident, member_expr, private_ident, quote_ident, quote_str, ExprFactory,
-        FunctionFactory,
+    common::{Span, Spanned, DUMMY_SP},
+    ecma::{
+        ast::*,
+        atoms::{js_word, JsWord},
+        utils::{
+            is_valid_prop_ident, member_expr, private_ident, quote_ident, quote_str, ExprFactory,
+            FunctionFactory,
+        },
     },
 };
 
