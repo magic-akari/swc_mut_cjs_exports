@@ -4,7 +4,7 @@ use swc_core::{
     common::{chain, Mark},
     ecma::{
         transforms::{
-            resolver,
+            base::resolver,
             testing::{test, test_fixture},
         },
         visit::{as_folder, Fold},
