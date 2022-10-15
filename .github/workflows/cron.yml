@@ -42,5 +42,5 @@ jobs:
                   node-version: "16"
                   cache: "pnpm"
 
-            - run: pnpm add -D --ignore-scripts @swc/core@latest @swc/jest@latest jest@latest
+            - run: pnpm add -D --ignore-scripts @swc/core@latest @swc/jest@latest
             - run: pnpm test

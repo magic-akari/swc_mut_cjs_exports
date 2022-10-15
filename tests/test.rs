@@ -26,5 +26,5 @@ fn test(input: PathBuf) {
     let dir = input.parent().unwrap().to_path_buf();
     let output = dir.join("output.js");
 
-    test_fixture(Default::default(), &|_| tr(), &input, &output);
+    test_fixture(Default::default(), &|_| tr(), &input, &output, Default::default());
 }
