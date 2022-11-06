@@ -29,37 +29,10 @@ impl VisitMut for TransformVisitor {
 
         let LocalExportStrip {
             has_export_assign,
-            has_export_default_expr,
             export,
             export_decl_id,
+            ..
         } = strip;
-
-        if has_export_default_expr {
-            for m in n.iter_mut() {
-                match m {
-                    ModuleItem::ModuleDecl(ModuleDecl::ExportDefaultExpr(ExportDefaultExpr {
-                        span,
-                        expr,
-                    })) => {
-                        let expr = expr.take().make_assign_to(
-                            op!("="),
-                            self.exports()
-                                .make_member(quote_ident!("default"))
-                                .as_pat_or_expr(),
-                        );
-
-                        *m = ModuleItem::Stmt(
-                            ExprStmt {
-                                span: *span,
-                                expr: Box::new(expr),
-                            }
-                            .into(),
-                        );
-                    }
-                    _ => {}
-                }
-            }
-        }
 
         self.export_decl_id = export_decl_id;
 

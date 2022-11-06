@@ -4,7 +4,7 @@ use swc_core::{
     ecma::{
         ast::*,
         atoms::{js_word, JsWord},
-        utils::{find_pat_ids, ExprFactory},
+        utils::{find_pat_ids, ExprFactory, private_ident},
         visit::{noop_visit_mut_type, VisitMut, VisitMutWith},
     },
 };
@@ -14,9 +14,9 @@ type Export = IndexMap<(JsWord, Span), Ident>;
 #[derive(Debug, Default)]
 pub(crate) struct LocalExportStrip {
     pub(crate) has_export_assign: bool,
-    pub(crate) has_export_default_expr: bool,
     pub(crate) export: Export,
     pub(crate) export_decl_id: AHashSet<Id>,
+    export_default: Option<Stmt>,
 }
 
 impl VisitMut for LocalExportStrip {
@@ -63,6 +63,9 @@ impl VisitMut for LocalExportStrip {
                             ),
                             _ => unreachable!(),
                         },
+                        ModuleDecl::ExportDefaultExpr(..) => {
+                            list.extend(self.export_default.take().map(From::from))
+                        }
                         ModuleDecl::TsExportAssignment(..) => {
                             self.has_export_assign = true;
                             list.push(module_decl.into());
@@ -184,7 +187,26 @@ impl VisitMut for LocalExportStrip {
         }
     }
 
+        /// ```javascript
+    /// export default foo;
+    /// export default 1
+    /// ```
+    /// ->
+    /// ```javascript
+    /// var _default = foo;
+    /// var _default = 1;
+    /// ```
     fn visit_mut_export_default_expr(&mut self, n: &mut ExportDefaultExpr) {
-        self.has_export_default_expr = true;
+        let ident = private_ident!(n.span, "_default");
+
+        self.export
+            .insert((js_word!("default"), n.span), ident.clone());
+
+        self.export_default = Some(Stmt::Decl(
+            n.expr
+                .take()
+                .into_var_decl(VarDeclKind::Const, ident.into())
+                .into(),
+        ));
     }
 }
