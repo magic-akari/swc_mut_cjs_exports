@@ -14,6 +14,7 @@ type Export = IndexMap<(JsWord, Span), Ident>;
 #[derive(Debug, Default)]
 pub(crate) struct LocalExportStrip {
     pub(crate) has_export_assign: bool,
+    pub(crate) has_export_default_expr: bool,
     pub(crate) export: Export,
     pub(crate) export_decl_id: AHashSet<Id>,
 }
@@ -181,5 +182,9 @@ impl VisitMut for LocalExportStrip {
             }
             DefaultDecl::TsInterfaceDecl(_) => {}
         }
+    }
+
+    fn visit_mut_export_default_expr(&mut self, n: &mut ExportDefaultExpr) {
+        self.has_export_default_expr = true;
     }
 }
