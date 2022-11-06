@@ -31,6 +31,7 @@ impl VisitMut for TransformVisitor {
             has_export_assign,
             export,
             export_decl_id,
+            ..
         } = strip;
 
         self.export_decl_id = export_decl_id;
