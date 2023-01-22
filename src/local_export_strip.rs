@@ -1,13 +1,15 @@
 use indexmap::IndexMap;
 use swc_core::{
-    common::{collections::AHashSet, util::take::Take, Span},
+    common::{collections::AHashSet, util::take::Take, Mark, Span, DUMMY_SP},
     ecma::{
         ast::*,
         atoms::{js_word, JsWord},
-        utils::{find_pat_ids, ExprFactory, private_ident},
+        utils::{find_pat_ids, private_ident, ExprFactory},
         visit::{noop_visit_mut_type, VisitMut, VisitMutWith},
     },
 };
+
+use crate::utils::{ident_from_export_name, re_export};
 
 type Export = IndexMap<(JsWord, Span), Ident>;
 
@@ -17,6 +19,7 @@ pub(crate) struct LocalExportStrip {
     pub(crate) export: Export,
     pub(crate) export_decl_id: AHashSet<Id>,
     export_default: Option<Stmt>,
+    pub unresolved_mark: Mark,
 }
 
 impl VisitMut for LocalExportStrip {
@@ -39,6 +42,14 @@ impl VisitMut for LocalExportStrip {
                             list.push(Stmt::Decl(decl).into());
                         }
                         ModuleDecl::ExportNamed(NamedExport { src: None, .. }) => continue,
+                        ModuleDecl::ExportNamed(export)
+                            if matches!(
+                                export.specifiers.first(),
+                                Some(ExportSpecifier::Named(_))
+                            ) =>
+                        {
+                            list.push(re_export(export, self.unresolved_mark).into())
+                        }
                         ModuleDecl::ExportDefaultDecl(ExportDefaultDecl {
                             decl:
                                 decl @ (DefaultDecl::Class(ClassExpr {
@@ -122,40 +133,57 @@ impl VisitMut for LocalExportStrip {
     /// export * as "bar" from "mod";
     /// ```
     fn visit_mut_named_export(&mut self, n: &mut NamedExport) {
-        if n.type_only || n.src.is_some() {
+        if n.type_only {
             return;
         }
 
-        let NamedExport { specifiers, .. } = n.take();
+        let (re_exported, NamedExport { specifiers, .. }) = match n.src {
+            Some(_) => (true, n.clone()),
+            None => (false, n.take()),
+        };
 
-        self.export.extend(specifiers.into_iter().map(|e| match e {
-            ExportSpecifier::Namespace(..) => {
-                unreachable!("`export *` without src is invalid")
-            }
-            ExportSpecifier::Default(..) => {
-                unreachable!("`export foo` without src is invalid")
-            }
-            ExportSpecifier::Named(ExportNamedSpecifier { orig, exported, .. }) => {
-                let orig = match orig {
-                    ModuleExportName::Ident(id) => id,
-                    ModuleExportName::Str(_) => {
-                        unreachable!(r#"`export {{ "foo" }}` without src is invalid"#)
+        self.export.extend(
+            specifiers
+                .into_iter()
+                .filter(|e| match e {
+                    ExportSpecifier::Namespace(..) => false,
+                    _ => true,
+                })
+                .map(|e| match e {
+                    ExportSpecifier::Namespace(..) => unreachable!(),
+                    ExportSpecifier::Default(..) => {
+                        unreachable!("`export foo` without src is invalid")
                     }
-                };
+                    ExportSpecifier::Named(ExportNamedSpecifier { orig, exported, .. }) => {
+                        let orig = ident_from_export_name(orig);
 
-                if let Some(exported) = exported {
-                    let exported = match exported {
-                        ModuleExportName::Ident(Ident { span, sym, .. }) => (sym, span),
-                        ModuleExportName::Str(Str { span, value, .. }) => (value, span),
-                    };
+                        if let Some(exported) = exported {
+                            let exported = match exported {
+                                ModuleExportName::Ident(Ident { span, sym, .. }) => (sym, span),
+                                ModuleExportName::Str(Str { span, value, .. }) => (value, span),
+                            };
 
-                    (exported, orig)
-                } else {
-                    let exported = orig.sym.clone();
-                    ((exported, orig.span), orig)
-                }
-            }
-        }))
+                            if re_exported {
+                                let sym = exported.0.clone();
+
+                                (
+                                    exported,
+                                    Ident {
+                                        span: DUMMY_SP,
+                                        sym,
+                                        optional: false,
+                                    },
+                                )
+                            } else {
+                                (exported, orig)
+                            }
+                        } else {
+                            let exported = orig.sym.clone();
+                            ((exported, orig.span), orig)
+                        }
+                    }
+                }),
+        )
     }
 
     /// ```javascript
@@ -187,7 +215,7 @@ impl VisitMut for LocalExportStrip {
         }
     }
 
-        /// ```javascript
+    /// ```javascript
     /// export default foo;
     /// export default 1
     /// ```

@@ -25,6 +25,8 @@ impl VisitMut for TransformVisitor {
 
     fn visit_mut_module_items(&mut self, n: &mut Vec<ModuleItem>) {
         let mut strip = LocalExportStrip::default();
+        strip.unresolved_mark = self.unresolved_mark;
+
         n.visit_mut_with(&mut strip);
 
         let LocalExportStrip {

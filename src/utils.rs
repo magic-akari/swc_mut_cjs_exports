@@ -1,5 +1,5 @@
 use swc_core::{
-    common::{Span, Spanned, DUMMY_SP},
+    common::{Mark, Span, Spanned, DUMMY_SP},
     ecma::{
         ast::*,
         atoms::{js_word, JsWord},
@@ -234,4 +234,75 @@ pub(crate) fn esm_export() -> Function {
         type_params: None,
         return_type: None,
     }
+}
+
+/// ```javascript
+/// const { foo } = require('foo');
+/// const { foo: bar } = require('foo');
+/// ```
+pub(crate) fn re_export(export: NamedExport, mark: Mark) -> VarDecl {
+    let NamedExport {
+        src, specifiers, ..
+    } = export;
+
+    VarDecl {
+        span: DUMMY_SP,
+        kind: VarDeclKind::Const,
+        declare: false,
+        decls: vec![VarDeclarator {
+            span: DUMMY_SP,
+            definite: false,
+            name: Pat::Object(ObjectPat {
+                span: DUMMY_SP,
+                optional: false,
+                props: specifiers
+                    .into_iter()
+                    .map(|specifier| match specifier {
+                        ExportSpecifier::Named(ExportNamedSpecifier { orig, exported, .. }) => {
+                            match exported {
+                                Some(alias) => ObjectPatProp::KeyValue(KeyValuePatProp {
+                                    key: PropName::Ident(ident_from_export_name(orig)),
+                                    value: Box::new(Pat::Ident(BindingIdent {
+                                        id: match alias {
+                                            ModuleExportName::Ident(ident) => ident,
+                                            ModuleExportName::Str(_) => unimplemented!(r#"`export {{ foo as "bar-baz" }}` is not currently supported"#),
+                                        },
+                                        type_ann: None,
+                                    })),
+                                }),
+                                None => ObjectPatProp::Assign(AssignPatProp {
+                                    span: DUMMY_SP,
+                                    key: ident_from_export_name(orig),
+                                    value: None,
+                                }),
+                            }
+                        }
+                        _ => unimplemented!("`re_export` only supports named exports"),
+                    })
+                    .collect(),
+                type_ann: None,
+            }),
+            init: Some(Box::new(Expr::Call(CallExpr {
+                span: DUMMY_SP,
+                callee: quote_ident!(DUMMY_SP.apply_mark(mark), "require").as_callee(),
+                args: vec![Lit::Str(Str {
+                    span: DUMMY_SP,
+                    raw: None,
+                    value: src.unwrap().value,
+                })
+                .as_arg()],
+
+                type_args: Default::default(),
+            }))),
+        }],
+    }
+}
+
+pub(crate) fn ident_from_export_name(name: ModuleExportName) -> Ident {
+    match name {
+        ModuleExportName::Ident(ident) => return ident,
+        ModuleExportName::Str(_) => {
+            unimplemented!(r#"`export {{ foo as "bar-baz" }}` is not currently supported"#)
+        }
+    };
 }
