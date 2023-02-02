@@ -1,13 +1,15 @@
 use indexmap::IndexMap;
 use swc_core::{
-    common::{collections::AHashSet, util::take::Take, Span},
+    common::{collections::AHashSet, util::take::Take, Span, DUMMY_SP},
     ecma::{
         ast::*,
         atoms::{js_word, JsWord},
-        utils::{find_pat_ids, ExprFactory, private_ident},
+        utils::{find_pat_ids, private_ident, ExprFactory, IdentExt},
         visit::{noop_visit_mut_type, VisitMut, VisitMutWith},
     },
 };
+
+use crate::utils::{key_from_export_name, local_ident_from_export_name};
 
 type Export = IndexMap<(JsWord, Span), Ident>;
 
@@ -39,6 +41,16 @@ impl VisitMut for LocalExportStrip {
                             list.push(Stmt::Decl(decl).into());
                         }
                         ModuleDecl::ExportNamed(NamedExport { src: None, .. }) => continue,
+                        ModuleDecl::ExportNamed(
+                            item @ NamedExport {
+                                src: Some(..),
+                                type_only: false,
+                                ..
+                            },
+                        ) => {
+                            let decl: ModuleDecl = self.convert_export_decl(item).into();
+                            list.push(decl.into());
+                        }
                         ModuleDecl::ExportDefaultDecl(ExportDefaultDecl {
                             decl:
                                 decl @ (DefaultDecl::Class(ClassExpr {
@@ -187,7 +199,7 @@ impl VisitMut for LocalExportStrip {
         }
     }
 
-        /// ```javascript
+    /// ```javascript
     /// export default foo;
     /// export default 1
     /// ```
@@ -208,5 +220,81 @@ impl VisitMut for LocalExportStrip {
                 .into_var_decl(VarDeclKind::Const, ident.into())
                 .into(),
         ));
+    }
+}
+
+impl LocalExportStrip {
+    fn convert_export_decl(&mut self, n: NamedExport) -> ImportDecl {
+        let NamedExport {
+            span,
+            specifiers,
+            src,
+            type_only,
+            asserts,
+        } = n;
+
+        let src = src.unwrap();
+
+        let specifiers = specifiers
+            .into_iter()
+            .flat_map(|s| self.convert_export_specifier(s))
+            .collect();
+
+        ImportDecl {
+            span,
+            specifiers,
+            src,
+            type_only,
+            asserts,
+        }
+    }
+
+    fn convert_export_specifier(&mut self, s: ExportSpecifier) -> Option<ImportSpecifier> {
+        match s {
+            ExportSpecifier::Namespace(ExportNamespaceSpecifier { span, name }) => {
+                let key = key_from_export_name(&name);
+                let local = local_ident_from_export_name(name);
+                self.export.insert(key, local.clone());
+
+                Some(ImportSpecifier::Namespace(ImportStarAsSpecifier {
+                    span,
+                    local,
+                }))
+            }
+            ExportSpecifier::Default(ExportDefaultSpecifier { exported }) => {
+                let key = (exported.sym.clone(), exported.span);
+                let local = exported.private();
+                self.export.insert(key, local.clone());
+
+                Some(ImportSpecifier::Default(ImportDefaultSpecifier {
+                    local,
+                    span: DUMMY_SP,
+                }))
+            }
+            ExportSpecifier::Named(ExportNamedSpecifier {
+                span,
+                orig,
+                exported,
+                is_type_only: false,
+            }) => {
+                // export { "x-1" as "y-1" } from "foo"
+                // ->
+                // import { "x-1" as x1 } from "foo"
+                // export { x1 as "y-1" }
+                let name = &exported.unwrap_or_else(|| orig.clone());
+
+                let key = key_from_export_name(name);
+                let local = local_ident_from_export_name(orig.clone());
+                self.export.insert(key, local.clone());
+
+                Some(ImportSpecifier::Named(ImportNamedSpecifier {
+                    span,
+                    local,
+                    imported: Some(orig),
+                    is_type_only: false,
+                }))
+            }
+            _ => None,
+        }
     }
 }

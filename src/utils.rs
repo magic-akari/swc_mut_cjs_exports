@@ -5,7 +5,7 @@ use swc_core::{
         atoms::{js_word, JsWord},
         utils::{
             is_valid_prop_ident, member_expr, private_ident, quote_ident, quote_str, ExprFactory,
-            FunctionFactory,
+            FunctionFactory, IdentExt,
         },
     },
 };
@@ -233,5 +233,22 @@ pub(crate) fn esm_export() -> Function {
         is_async: false,
         type_params: None,
         return_type: None,
+    }
+}
+
+pub(crate) fn key_from_export_name(n: &ModuleExportName) -> (JsWord, Span) {
+    match n {
+        ModuleExportName::Ident(ident) => (ident.sym.clone(), ident.span),
+        ModuleExportName::Str(str) => (str.value.clone(), str.span),
+    }
+}
+
+pub(crate) fn local_ident_from_export_name(n: ModuleExportName) -> Ident {
+    match n {
+        ModuleExportName::Ident(ident) => ident.private(),
+        ModuleExportName::Str(str) => match Ident::verify_symbol(&str.value) {
+            Ok(_) => private_ident!(str.value),
+            Err(s) => private_ident!(s),
+        },
     }
 }
