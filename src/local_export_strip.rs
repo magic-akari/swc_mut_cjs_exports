@@ -281,7 +281,7 @@ impl LocalExportStrip {
                 // ->
                 // import { "x-1" as x1 } from "foo"
                 // export { x1 as "y-1" }
-                let name = &exported.unwrap_or_else(|| orig.clone());
+                let name = exported.as_ref().unwrap_or(&orig);
 
                 let key = key_from_export_name(name);
                 let local = local_ident_from_export_name(orig.clone());
