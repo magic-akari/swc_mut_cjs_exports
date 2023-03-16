@@ -39,7 +39,7 @@ does not touch non-workaround parts, such as import statements.
 
 ## FAQ
 
-1. When do I need this?
+#### 1. When do I need this?
 
 If you're using the swc compiler to transform your code to comply with the ESM
 specification, but you're also using Jest to test it in a CJS environment, you
@@ -48,7 +48,7 @@ may encounter issues due to the immutable issue of `exports`.
 This plugin can help by transforming the `export` statements into mutable
 `exports`.
 
-2. Do I have a better choice?
+#### 2. Do I have a better choice?
 
 You may have other options depending on your specific needs:
 
@@ -89,7 +89,7 @@ Notes:
 - ESM style export means immutable exports when transformed into CJS
 - ESM style import means hoisted require when transformed into CJS
 
-3. After upgrading the plugin version, the changes have not taken effect.
+#### 3. After upgrading the plugin version, the changes have not taken effect.
 
 This is a known issue. You could remove the Jest cache by running
 [`jest --clearCache`](https://jestjs.io/docs/cli#--clearcache) as a workaround.
