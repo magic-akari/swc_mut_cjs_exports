@@ -88,3 +88,8 @@ Notes:
 
 - ESM style export means immutable exports when transformed into CJS
 - ESM style import means hoisted require when transformed into CJS
+
+3. After upgrading the plugin version, the changes have not taken effect.
+
+This is a known issue. You could remove the Jest cache by running
+[`jest --clearCache`](https://jestjs.io/docs/cli#--clearcache) as a workaround.
