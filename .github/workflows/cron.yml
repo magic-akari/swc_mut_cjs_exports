@@ -39,7 +39,7 @@ jobs:
             - uses: pnpm/action-setup@v2.2.2
             - uses: actions/setup-node@v3
               with:
-                  node-version: "16"
+                  node-version-file: ".node-version"
                   cache: "pnpm"
 
             - run: pnpm add -D --ignore-scripts @swc/core@latest @swc/jest@latest
