@@ -62,8 +62,9 @@ You may have other options depending on your specific needs:
   updates.
 
 - If you don't need the behavior of ESM specifically, you can stick with the CJS
-  syntax to get the CJS behavior of `exports`. These options may be worth
-  considering before using this plugin.
+  syntax to get the CJS behavior of `exports`.
+
+These options may be worth considering before using this plugin.
 
 CJS syntax
 
