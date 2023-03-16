@@ -1,3 +1,5 @@
 {
-    "main": "../target/wasm32-unknown-unknown/debug/jest_workaround.wasm"
+    "name": "jest_workaround_debug",
+    "main": "./jest_workaround.wasm",
+    "private": true
 }

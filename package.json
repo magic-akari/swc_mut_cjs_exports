@@ -9,15 +9,17 @@
         "jest"
     ],
     "scripts": {
-        "test": "jest",
-        "build": "cargo build --target wasm32-unknown-unknown",
-        "prepublishOnly": "cargo build --release --target wasm32-unknown-unknown"
+        "test:debug": "NODE_ENV=development pnpm build:debug && jest",
+        "build:debug": "cargo build --target wasm32-unknown-unknown && cp -rf target/wasm32-unknown-unknown/debug/jest_workaround.wasm ./debug",
+        "test": "pnpm build && jest",
+        "build": "cargo prepublish --release && cp -rf target/wasm32-unknown-unknown/release/jest_workaround.wasm ./lib",
+        "prepack": "pnpm build"
     },
-    "packageManager": "pnpm@7.13.4",
-    "main": "target/wasm32-unknown-unknown/release/jest_workaround.wasm",
+    "packageManager": "pnpm@7.29.3",
+    "main": "lib/jest_workaround.wasm",
     "files": [
         "src",
-        "target/wasm32-unknown-unknown/release/jest_workaround.wasm"
+        "lib"
     ],
     "homepage": "https://github.com/magic-akari/jest_workaround#readme",
     "repository": {

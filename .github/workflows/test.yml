@@ -38,8 +38,6 @@ jobs:
             - run: cargo test
 
             # test in node
-            - run: cargo build --target wasm32-unknown-unknown
-
             - uses: pnpm/action-setup@v2.2.2
             - uses: actions/setup-node@v3
               with:
@@ -47,4 +45,4 @@ jobs:
                   cache: "pnpm"
 
             - run: pnpm i --ignore-scripts --frozen-lockfile
-            - run: pnpm test
+            - run: pnpm test:debug

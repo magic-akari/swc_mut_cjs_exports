@@ -31,4 +31,7 @@ swc_core = { version = "0.69.8", features = ["testing_transform"] }
 testing  = "0.31.40"
 
 [profile.release]
-strip = "debuginfo"
+codegen-units = 1
+lto           = true
+opt-level     = "s"
+strip         = "debuginfo"
