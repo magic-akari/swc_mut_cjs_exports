@@ -34,48 +34,53 @@ module.exports = {
 };
 ```
 
-Make sure that `module.type` is `commonjs` in your `.swcrc` since this plugin does not touch non-workaround parts, such as import statements.
+Make sure that `module.type` is `commonjs` in your `.swcrc` since this plugin
+does not touch non-workaround parts, such as import statements.
 
 ## FAQ
 
 1. When do I need this?
 
-The swc-transformed CJS is compliant with the ESM specification. This means that exports is immutable.
+If you're using the swc compiler to transform your code to comply with the ESM
+specification, but you're also using Jest to test it in a CJS environment, you
+may encounter issues due to the immutable issue of `exports`.
 
-I need to use swc to get transformed code which conforms to the ESM specification.
-But I need to use jest in a CJS environment to test it.
-
-The immutable exports is difficult to use for jest testing.
-This plugin will transform the export statement into mutable exports.
+This plugin can help by transforming the `export` statements into mutable
+`exports`.
 
 2. Do I have a better choice?
 
-Yes.
+You may have other options depending on your specific needs:
 
-If I can run jest in an ESM environment, then I don't even need swc, or just use swc to transform TypeScript syntax.
+- If you're able to run Jest in an ESM environment, you can use swc to transpile
+  TypeScript/JSX syntax or downgrade JavaScript syntax without module
+  conversion. Simply set the value of `module.type` to `es6` to achieve this.
 
-There may be some issues with running jest in ESM, but they will be resolved over time.
-Tracked by [facebook/jest#9430](https://github.com/facebook/jest/issues/9430).
+- It's possible that some issues related to running Jest in an ESM environment
+  will be resolved over time. Keep an eye on
+  [facebook/jest#9430](https://github.com/facebook/jest/issues/9430) for
+  updates.
 
-Or, I don't need the behavior of ESM.
-I can get the CJS behavior of exports by using the CJS syntax.
+- If you don't need the behavior of ESM specifically, you can stick with the CJS
+  syntax to get the CJS behavior of `exports`. These options may be worth
+  considering before using this plugin.
 
-CJS specific syntax
+CJS syntax
 
 ```JavaScript
-exports.foo = function foo(){
-    return 42;
-}
+exports.foo = function foo() {
+  return 42;
+};
 ```
 
 CTS(CJS in TypeScript) syntax
 
 ```TypeScript
 export = {
-    foo: function foo(){
-        return 42;
-    }
-}
+  foo: function foo() {
+    return 42;
+  },
+};
 ```
 
 Notes:
