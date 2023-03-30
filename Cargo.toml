@@ -8,7 +8,7 @@ license     = "MIT"
 name        = "jest_workaround"
 readme      = "README.md"
 repository  = "https://github.com/magic-akari/jest_workaround"
-version     = "0.69.0"
+version     = "0.72.6"
 
 [lib]
 crate-type = ["cdylib", "lib"]
