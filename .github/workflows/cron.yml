@@ -36,7 +36,7 @@ jobs:
 
             - run: cargo build --target wasm32-unknown-unknown
 
-            - uses: pnpm/action-setup@v2.2.2
+            - uses: pnpm/action-setup@v2.2.4
             - uses: actions/setup-node@v3
               with:
                   node-version-file: ".node-version"
