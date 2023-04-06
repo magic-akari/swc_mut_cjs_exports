@@ -15,7 +15,7 @@
         "build": "cargo prepublish --release && cp -rf target/wasm32-unknown-unknown/release/jest_workaround.wasm .",
         "prepack": "pnpm build"
     },
-    "packageManager": "pnpm@7.29.3",
+    "packageManager": "pnpm@8.1.1",
     "main": "jest_workaround.wasm",
     "files": [
         "src",
