@@ -28,7 +28,7 @@ swc_core = { version = "0.75.4", features = [
 
 [dev-dependencies]
 swc_core = { version = "0.75.4", features = ["testing_transform"] }
-testing  = "0.32.3"
+testing  = "0.33.0"
 
 [profile.release]
 codegen-units = 1
