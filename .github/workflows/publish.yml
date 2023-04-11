@@ -30,7 +30,7 @@ jobs:
             - uses: pnpm/action-setup@v2.2.4
               with:
                   run_install: |
-                      - recursive: true
+                      - recursive: false
                         args: [--ignore-scripts, --frozen-lockfile]
 
             - name: Run cargo check for all targets
