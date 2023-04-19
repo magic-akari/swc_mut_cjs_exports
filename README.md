@@ -10,6 +10,10 @@ This is a SWC plugin to handle jest compatibility issues.
 
 This SWC plugin should be used with `@swc/jest`.
 
+## plugin version
+
+https://swc.rs/docs/plugin/selecting-swc-core
+
 ## usage
 
 install
