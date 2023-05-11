@@ -46,3 +46,38 @@ jobs:
 
             - run: pnpm i --ignore-scripts --frozen-lockfile
             - run: pnpm test:debug
+
+    latest:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Install Rust
+              uses: actions-rs/toolchain@v1
+              with:
+                  profile: minimal
+                  target: wasm32-unknown-unknown
+
+            - name: Cache cargo registry
+              uses: actions/cache@v3
+              with:
+                  path: |
+                      ~/.cargo/registry/index/
+                      ~/.cargo/registry/cache/
+                      ~/.cargo/git/db/
+                      .cargo-cache/
+                      target
+                  key: ${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
+
+            - name: Run cargo check for all targets
+              run: cargo check --color always --all --all-targets
+
+            - run: cargo test
+
+            - uses: pnpm/action-setup@v2.2.4
+            - uses: actions/setup-node@v3
+              with:
+                  node-version-file: ".node-version"
+
+            - run: pnpm add -D --ignore-scripts @swc/core@latest @swc/jest@latest
+            - run: pnpm test:debug
