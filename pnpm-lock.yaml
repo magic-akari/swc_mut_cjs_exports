@@ -2,7 +2,7 @@ lockfileVersion: '6.0'
 
 devDependencies:
   '@swc/core':
-    specifier: ^1.3.63
+    specifier: ^1.3.68
     version: 1.3.68
   '@swc/jest':
     specifier: ^0.2.26
