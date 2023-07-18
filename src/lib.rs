@@ -6,7 +6,9 @@ use swc_core::{
     common::{collections::AHashSet, util::take::Take, Mark, DUMMY_SP},
     ecma::{
         ast::*,
-        utils::{quote_ident, ExprFactory, IntoIndirectCall},
+        utils::{
+            member_expr, private_ident, quote_ident, quote_str, ExprFactory, IntoIndirectCall,
+        },
         visit::{as_folder, noop_visit_mut_type, FoldWith, VisitMut, VisitMutWith},
     },
     plugin::{plugin_transform, proxies::TransformPluginProgramMetadata},
@@ -23,20 +25,25 @@ pub struct TransformVisitor {
 impl VisitMut for TransformVisitor {
     noop_visit_mut_type!();
 
-    fn visit_mut_module_items(&mut self, n: &mut Vec<ModuleItem>) {
+    fn visit_mut_script(&mut self, _: &mut Script) {
+        // skip
+    }
+
+    fn visit_mut_module(&mut self, n: &mut Module) {
         let mut strip = LocalExportStrip::default();
         n.visit_mut_with(&mut strip);
 
         let LocalExportStrip {
             has_export_assign,
             export,
+            export_all,
             export_decl_id,
             ..
         } = strip;
 
         self.export_decl_id = export_decl_id;
 
-        let mut stmts: Vec<ModuleItem> = Vec::with_capacity(n.len() + 1);
+        let mut stmts: Vec<ModuleItem> = Vec::with_capacity(n.body.len() + 1);
 
         if !has_export_assign && !export.is_empty() {
             // keep module env
@@ -59,9 +66,11 @@ impl VisitMut for TransformVisitor {
             }
         }
 
-        stmts.extend(n.take());
+        stmts.extend(export_all.into_iter().map(|id| self.export_all(id)));
 
-        *n = stmts;
+        stmts.extend(n.body.take());
+
+        n.body = stmts;
     }
 
     fn visit_mut_prop(&mut self, n: &mut Prop) {
@@ -135,6 +144,123 @@ impl TransformVisitor {
 
     fn exports(&self) -> Ident {
         quote_ident!(DUMMY_SP.apply_mark(self.unresolved_mark), "exports")
+    }
+
+    /// ```JavaScript
+    /// Object.keys(_mod).forEach(function (key) {
+    ///     if (key === "default" || key === "__esModule") return;
+    ///     if (key in exports && exports[key] === _mod[key]) return;
+    ///     exports[key] = _mod[key];
+    /// });
+    /// ```
+    fn export_all(&self, id: Id) -> ModuleItem {
+        let mod_name = Ident::from(id);
+        let key = private_ident!("key");
+
+        member_expr!(DUMMY_SP, Object.keys)
+            .as_call(DUMMY_SP, vec![mod_name.clone().as_arg()])
+            .make_member(quote_ident!("forEach"))
+            .as_call(
+                DUMMY_SP,
+                vec![Function {
+                    params: vec![key.clone().into()],
+                    decorators: vec![],
+                    span: DUMMY_SP,
+                    body: Some(BlockStmt {
+                        span: DUMMY_SP,
+                        stmts: vec![
+                            // if (key === "default" || key === "__esModule") return;
+                            IfStmt {
+                                span: DUMMY_SP,
+                                test: BinExpr {
+                                    span: DUMMY_SP,
+                                    op: op!("||"),
+                                    left: BinExpr {
+                                        span: DUMMY_SP,
+                                        op: op!("==="),
+                                        left: key.clone().into(),
+                                        right: quote_str!("default").into(),
+                                    }
+                                    .into(),
+                                    right: BinExpr {
+                                        span: DUMMY_SP,
+                                        op: op!("==="),
+                                        left: key.clone().into(),
+                                        right: quote_str!("__esModule").into(),
+                                    }
+                                    .into(),
+                                }
+                                .into(),
+                                cons: Box::new(
+                                    ReturnStmt {
+                                        span: DUMMY_SP,
+                                        arg: None,
+                                    }
+                                    .into(),
+                                ),
+                                alt: None,
+                            }
+                            .into(),
+                            // if (key in exports && exports[key] === _mod[key]) return;
+                            IfStmt {
+                                span: DUMMY_SP,
+                                test: BinExpr {
+                                    span: DUMMY_SP,
+                                    op: op!("&&"),
+                                    left: BinExpr {
+                                        span: DUMMY_SP,
+                                        op: op!("in"),
+                                        left: key.clone().into(),
+                                        right: self.exports().into(),
+                                    }
+                                    .into(),
+                                    right: BinExpr {
+                                        span: DUMMY_SP,
+                                        op: op!("==="),
+                                        left: self
+                                            .exports()
+                                            .computed_member(quote_ident!("key"))
+                                            .into(),
+                                        right: mod_name
+                                            .clone()
+                                            .computed_member(quote_ident!("key"))
+                                            .into(),
+                                    }
+                                    .into(),
+                                }
+                                .into(),
+                                cons: Box::new(
+                                    ReturnStmt {
+                                        span: DUMMY_SP,
+                                        arg: None,
+                                    }
+                                    .into(),
+                                ),
+                                alt: None,
+                            }
+                            .into(),
+                            // exports[key] = _mod[key];
+                            mod_name
+                                .clone()
+                                .computed_member(quote_ident!("key"))
+                                .make_assign_to(
+                                    op!("="),
+                                    self.exports()
+                                        .computed_member(quote_ident!("key"))
+                                        .as_pat_or_expr(),
+                                )
+                                .into_stmt(),
+                        ],
+                    }),
+                    is_generator: false,
+                    is_async: false,
+                    type_params: None,
+                    return_type: None,
+                }
+                .as_arg()],
+            )
+            .into_stmt()
+            .into()
     }
 }
 
