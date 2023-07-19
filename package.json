@@ -10,9 +10,9 @@
     ],
     "scripts": {
         "test:debug": "NODE_ENV=development pnpm build:debug && NODE_ENV=development jest",
-        "build:debug": "cargo build --target wasm32-unknown-unknown && cp -rf target/wasm32-unknown-unknown/debug/jest_workaround.wasm ./debug",
+        "build:debug": "cargo build --target wasm32-wasi && cp -rf target/wasm32-wasi/debug/jest_workaround.wasm ./debug",
         "test": "pnpm build && jest",
-        "build": "cargo prepublish --release && cp -rf target/wasm32-unknown-unknown/release/jest_workaround.wasm .",
+        "build": "cargo prepublish --release && cp -rf target/wasm32-wasi/release/jest_workaround.wasm .",
         "prepack": "pnpm build"
     },
     "packageManager": "pnpm@8.6.8",

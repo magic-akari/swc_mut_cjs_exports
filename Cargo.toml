@@ -31,6 +31,5 @@ testing  = "0.33.16"
 
 [profile.release]
 codegen-units = 1
-lto           = true
 opt-level     = "s"
 strip         = "debuginfo"
