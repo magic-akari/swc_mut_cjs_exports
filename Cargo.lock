@@ -552,7 +552,7 @@ checksum = "453ad9f582a441959e5f0d088b02ce04cfe8d51a8eaf077f12ac6d3e94164ca6"
 
 [[package]]
 name = "jest_workaround"
-version = "0.78.19"
+version = "0.79.19"
 dependencies = [
  "indexmap 2.0.0",
  "swc_core",
