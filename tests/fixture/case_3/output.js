@@ -1,7 +1,12 @@
 export { };
 Object.defineProperty(exports, "App", {
     enumerable: true,
-    get: ()=>App,
+    get () {
+        return App;
+    },
+    set (v) {
+        App = v;
+    },
     configurable: true
 });
 import React from "react";

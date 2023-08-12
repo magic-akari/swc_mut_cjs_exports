@@ -1,14 +1,23 @@
 export { };
-function _export(target, all) {
-    for(var name in all)Object.defineProperty(target, name, {
-        enumerable: true,
-        get: all[name],
-        configurable: true
-    });
-}
-_export(exports, {
-    foo: ()=>foo,
-    bar: ()=>bar
+Object.defineProperty(exports, "foo", {
+    enumerable: true,
+    get () {
+        return foo;
+    },
+    set (v) {
+        foo = v;
+    },
+    configurable: true
+});
+Object.defineProperty(exports, "bar", {
+    enumerable: true,
+    get () {
+        return bar;
+    },
+    set (v) {
+        bar = v;
+    },
+    configurable: true
 });
 function foo() {
     foo = ()=>1;

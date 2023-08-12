@@ -1,17 +1,53 @@
 export { };
-function _export(target, all) {
-    for(var name in all)Object.defineProperty(target, name, {
-        enumerable: true,
-        get: all[name],
-        configurable: true
-    });
-}
-_export(exports, {
-    foo: ()=>foo1,
-    foofoo: ()=>foofoo,
-    bar: ()=>bar1,
-    "y-1": ()=>x1,
-    ns: ()=>ns
+Object.defineProperty(exports, "foo", {
+    enumerable: true,
+    get () {
+        return foo1;
+    },
+    set (v) {
+        foo1 = v;
+    },
+    configurable: true
+});
+Object.defineProperty(exports, "foofoo", {
+    enumerable: true,
+    get () {
+        return foofoo;
+    },
+    set (v) {
+        foofoo = v;
+    },
+    configurable: true
+});
+Object.defineProperty(exports, "bar", {
+    enumerable: true,
+    get () {
+        return bar1;
+    },
+    set (v) {
+        bar1 = v;
+    },
+    configurable: true
+});
+Object.defineProperty(exports, "y-1", {
+    enumerable: true,
+    get () {
+        return x1;
+    },
+    set (v) {
+        x1 = v;
+    },
+    configurable: true
+});
+Object.defineProperty(exports, "ns", {
+    enumerable: true,
+    get () {
+        return ns;
+    },
+    set (v) {
+        ns = v;
+    },
+    configurable: true
 });
 import { foo } from "foo";
 import { foo as foo1, foofoo as foofoo } from "foo";

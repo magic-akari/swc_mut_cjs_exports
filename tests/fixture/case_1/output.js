@@ -1,14 +1,23 @@
 export { };
-function _export(target, all) {
-    for(var name in all)Object.defineProperty(target, name, {
-        enumerable: true,
-        get: all[name],
-        configurable: true
-    });
-}
-_export(exports, {
-    child: ()=>child,
-    callChild: ()=>callChild
+Object.defineProperty(exports, "child", {
+    enumerable: true,
+    get () {
+        return child;
+    },
+    set (v) {
+        child = v;
+    },
+    configurable: true
+});
+Object.defineProperty(exports, "callChild", {
+    enumerable: true,
+    get () {
+        return callChild;
+    },
+    set (v) {
+        callChild = v;
+    },
+    configurable: true
 });
 const child = ()=>{
     console.log("Hello World!");

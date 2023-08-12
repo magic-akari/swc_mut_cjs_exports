@@ -1,7 +1,12 @@
 export { };
 Object.defineProperty(exports, "getRedis", {
     enumerable: true,
-    get: ()=>getRedis,
+    get () {
+        return getRedis;
+    },
+    set (v) {
+        getRedis = v;
+    },
     configurable: true
 });
 import memoize from "p-memoize";
