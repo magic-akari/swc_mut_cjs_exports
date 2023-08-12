@@ -1,7 +1,7 @@
 {
-    "name": "jest_workaround",
+    "name": "swc_mut_cjs_exports",
     "version": "0.79.19",
-    "description": "[SWC plugin] workaround for jest",
+    "description": "[SWC plugin] mutable CJS exports",
     "author": "magic-akari <akari.ccino@gmail.com>",
     "license": "MIT",
     "keywords": [
@@ -10,24 +10,24 @@
     ],
     "scripts": {
         "test:debug": "NODE_ENV=development pnpm build:debug && NODE_ENV=development jest",
-        "build:debug": "cargo build --target wasm32-wasi && cp -rf target/wasm32-wasi/debug/jest_workaround.wasm ./debug",
+        "build:debug": "cargo build --target wasm32-wasi && cp -rf target/wasm32-wasi/debug/swc_mut_cjs_exports.wasm ./debug",
         "test": "pnpm build && jest",
-        "build": "cargo prepublish --release && cp -rf target/wasm32-wasi/release/jest_workaround.wasm .",
+        "build": "cargo prepublish --release && cp -rf target/wasm32-wasi/release/swc_mut_cjs_exports.wasm .",
         "prepack": "pnpm build"
     },
     "packageManager": "pnpm@8.6.8",
-    "main": "jest_workaround.wasm",
+    "main": "swc_mut_cjs_exports.wasm",
     "files": [
         "src",
-        "jest_workaround.wasm"
+        "swc_mut_cjs_exports.wasm"
     ],
-    "homepage": "https://github.com/magic-akari/jest_workaround#readme",
+    "homepage": "https://github.com/magic-akari/swc_mut_cjs_exports#readme",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/magic-akari/jest_workaround.git"
+        "url": "git+https://github.com/magic-akari/swc_mut_cjs_exports.git"
     },
     "bugs": {
-        "url": "https://github.com/magic-akari/jest_workaround/issues"
+        "url": "https://github.com/magic-akari/swc_mut_cjs_exports/issues"
     },
     "devDependencies": {
         "@swc/core": "^1.3.68",

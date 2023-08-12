@@ -1,5 +1,5 @@
 {
-    "name": "jest_workaround_debug",
-    "main": "./jest_workaround.wasm",
+    "name": "swc_mut_cjs_exports_debug",
+    "main": "./swc_mut_cjs_exports.wasm",
     "private": true
 }

@@ -1,14 +1,14 @@
 # [SWC plugin] workaround for jest
 
-[![Crates.io](https://img.shields.io/crates/v/jest_workaround)](https://crates.io/crates/jest_workaround)
-[![npm](https://img.shields.io/npm/v/jest_workaround)](https://www.npmjs.com/package/jest_workaround)
+[![Crates.io](https://img.shields.io/crates/v/swc_mut_cjs_exports)](https://crates.io/crates/swc_mut_cjs_exports)
+[![npm](https://img.shields.io/npm/v/swc_mut_cjs_exports)](https://www.npmjs.com/package/swc_mut_cjs_exports)
 
-[![Test](https://github.com/magic-akari/jest_workaround/actions/workflows/test.yml/badge.svg)](https://github.com/magic-akari/jest_workaround/actions/workflows/test.yml)
-[![with @swc/core@latest](https://github.com/magic-akari/jest_workaround/actions/workflows/cron.yml/badge.svg)](https://github.com/magic-akari/jest_workaround/actions/workflows/cron.yml)
+[![Test](https://github.com/magic-akari/swc_mut_cjs_exports/actions/workflows/test.yml/badge.svg)](https://github.com/magic-akari/swc_mut_cjs_exports/actions/workflows/test.yml)
+[![with @swc/core@latest](https://github.com/magic-akari/swc_mut_cjs_exports/actions/workflows/cron.yml/badge.svg)](https://github.com/magic-akari/swc_mut_cjs_exports/actions/workflows/cron.yml)
 
-This is a SWC plugin to handle jest compatibility issues.
+This is a SWC plugin to emit mutable CJS exports.
 
-This SWC plugin should be used with `@swc/jest`.
+This SWC plugin has only been tested for compatibility with jest. It should be used with `@swc/jest`.
 
 ## plugin version
 
@@ -19,7 +19,7 @@ https://swc.rs/docs/plugin/selecting-swc-core
 install
 
 ```bash
-npm i -D jest @swc/core @swc/jest jest_workaround
+npm i -D jest @swc/core @swc/jest swc_mut_cjs_exports
 ```
 
 ```js
@@ -29,7 +29,7 @@ const fs = require("node:fs");
 const swcrc = JSON.parse(fs.readFileSync(".swcrc", "utf8"));
 
 // If you have other plugins, change this line.
-((swcrc.jsc ??= {}).experimental ??= {}).plugins = [["jest_workaround", {}]];
+((swcrc.jsc ??= {}).experimental ??= {}).plugins = [["swc_mut_cjs_exports", {}]];
 
 module.exports = {
   transform: {

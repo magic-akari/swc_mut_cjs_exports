@@ -2,12 +2,12 @@
 authors     = ["magic-akari <akari.ccino@gmail.com>"]
 description = "[SWC plugin] workaround for jest"
 edition     = "2021"
-homepage    = "https://github.com/magic-akari/jest_workaround"
+homepage    = "https://github.com/magic-akari/swc_mut_cjs_exports"
 keywords    = ["swc-plugin", "jest"]
 license     = "MIT"
-name        = "jest_workaround"
+name        = "swc_mut_cjs_exports"
 readme      = "README.md"
-repository  = "https://github.com/magic-akari/jest_workaround"
+repository  = "https://github.com/magic-akari/swc_mut_cjs_exports"
 version     = "0.79.19"
 
 [lib]
