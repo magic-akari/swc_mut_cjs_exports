@@ -15,7 +15,7 @@
         "build": "cargo prepublish --release && cp -rf target/wasm32-wasi/release/swc_mut_cjs_exports.wasm .",
         "prepack": "pnpm build"
     },
-    "packageManager": "pnpm@8.6.8",
+    "packageManager": "pnpm@8.7.1",
     "main": "swc_mut_cjs_exports.wasm",
     "files": [
         "src",
