@@ -1552,7 +1552,7 @@ dependencies = [
 
 [[package]]
 name = "swc_mut_cjs_exports"
-version = "0.79.19"
+version = "0.79.69"
 dependencies = [
  "indexmap 2.0.0",
  "swc_core",
