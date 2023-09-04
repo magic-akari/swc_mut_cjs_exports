@@ -19,7 +19,7 @@ jobs:
               uses: actions-rs/toolchain@v1
               with:
                   profile: minimal
-                  target: wasm32-wasi
+                  target: wasm32-unknown-unknown
 
             - name: Cache cargo registry
               uses: actions/cache@v3
@@ -56,7 +56,7 @@ jobs:
               uses: actions-rs/toolchain@v1
               with:
                   profile: minimal
-                  target: wasm32-wasi
+                  target: wasm32-unknown-unknown
 
             - name: Cache cargo registry
               uses: actions/cache@v3
