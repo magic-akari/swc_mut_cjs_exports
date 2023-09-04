@@ -1,5 +1,0 @@
-{
-    "name": "swc_mut_cjs_exports_debug",
-    "main": "./swc_mut_cjs_exports.wasm",
-    "private": true
-}

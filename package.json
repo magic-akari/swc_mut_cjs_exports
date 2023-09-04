@@ -12,11 +12,9 @@
         "commonjs"
     ],
     "scripts": {
-        "test:debug": "NODE_ENV=development pnpm build:debug && NODE_ENV=development jest",
-        "build:debug": "cargo build --target wasm32-unknown-unknown && cp -rf target/wasm32-unknown-unknown/debug/swc_mut_cjs_exports.wasm ./debug",
-        "test": "pnpm build && jest",
-        "build": "cargo prepublish --release && cp -rf target/wasm32-unknown-unknown/release/swc_mut_cjs_exports.wasm .",
-        "prepack": "pnpm build"
+        "build": "cargo build --target wasm32-unknown-unknown",
+        "test": "jest",
+        "prepack": "cp -rf target/wasm32-unknown-unknown/release/swc_mut_cjs_exports.wasm ."
     },
     "packageManager": "pnpm@8.6.8",
     "main": "swc_mut_cjs_exports.wasm",
