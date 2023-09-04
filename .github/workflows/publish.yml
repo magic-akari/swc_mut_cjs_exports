@@ -42,7 +42,7 @@ jobs:
                   node-version-file: ".node-version"
                   registry-url: "https://registry.npmjs.org"
 
-            - uses: pnpm/action-setup@v2.2.4
+            - uses: pnpm/action-setup@d882d12c64e032187b2edb46d3a0d003b7a43598 # v2.4.0
               with:
                   run_install: |
                       - recursive: false
