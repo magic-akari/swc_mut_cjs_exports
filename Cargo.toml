@@ -3,19 +3,19 @@ authors     = ["magic-akari <akari.ccino@gmail.com>"]
 description = "[SWC plugin] workaround for jest"
 edition     = "2021"
 homepage    = "https://github.com/magic-akari/swc_mut_cjs_exports"
-keywords    = ["swc-plugin", "jest"]
+keywords    = ["swc-plugin", "swc", "jest", "cjs", "commonjs"]
 license     = "MIT"
 name        = "swc_mut_cjs_exports"
 readme      = "README.md"
 repository  = "https://github.com/magic-akari/swc_mut_cjs_exports"
-version     = "0.79.19"
+version     = "0.79.69"
 
 [lib]
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
 indexmap = "2.0.0"
-swc_core = { version = "0.79.55", features = [
+swc_core = { version = "0.79.69", features = [
     "ecma_ast",
     "ecma_visit",
     "swc_plugin",
@@ -26,7 +26,7 @@ swc_core = { version = "0.79.55", features = [
 
 
 [dev-dependencies]
-swc_core = { version = "0.79.55", features = ["testing_transform"] }
+swc_core = { version = "0.79.69", features = ["testing_transform"] }
 testing  = "0.33.21"
 
 [profile.release]

@@ -1,4 +1,4 @@
-# [SWC plugin] workaround for jest
+# [SWC plugin] mutable CJS exports
 
 [![Crates.io](https://img.shields.io/crates/v/swc_mut_cjs_exports)](https://crates.io/crates/swc_mut_cjs_exports)
 [![npm](https://img.shields.io/npm/v/swc_mut_cjs_exports)](https://www.npmjs.com/package/swc_mut_cjs_exports)
@@ -9,6 +9,8 @@
 This is a SWC plugin to emit mutable CJS exports.
 
 This SWC plugin has only been tested for compatibility with jest. It should be used with `@swc/jest`.
+
+This project was previously called jest_workaround
 
 ## plugin version
 
@@ -29,7 +31,9 @@ const fs = require("node:fs");
 const swcrc = JSON.parse(fs.readFileSync(".swcrc", "utf8"));
 
 // If you have other plugins, change this line.
-((swcrc.jsc ??= {}).experimental ??= {}).plugins = [["swc_mut_cjs_exports", {}]];
+((swcrc.jsc ??= {}).experimental ??= {}).plugins = [
+  ["swc_mut_cjs_exports", {}],
+];
 
 module.exports = {
   transform: {

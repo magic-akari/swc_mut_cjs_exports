@@ -8,43 +8,58 @@ on:
 env:
     CARGO_INCREMENTAL: 0
     CARGO_PROFILE_RELEASE_LTO: "fat"
+    CARGO_TERM_COLOR: always
 
 jobs:
-    build:
+    cargo-publish:
         if: startsWith(github.ref, 'refs/tags/v')
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
 
-            - name: Install Rust
-              uses: actions-rs/toolchain@v1
+            - name: Pre-Release
+              run: cargo publish --dry-run
+
+            - name: Github Release
+              uses: softprops/action-gh-release@c9b46fe7aad9f02afd89b12450b780f52dacfb2d
               with:
-                  profile: minimal
-                  target: wasm32-wasi
-
-            - uses: actions/setup-node@v3
-              with:
-                  node-version-file: ".node-version"
-                  registry-url: "https://registry.npmjs.org"
-
-            - uses: pnpm/action-setup@v2.2.4
-              with:
-                  run_install: |
-                      - recursive: false
-                        args: [--ignore-scripts, --frozen-lockfile]
-
-            - name: Run cargo check for all targets
-              run: cargo check --color always --all --all-targets
-
-            - run: cargo test --release
-            - run: pnpm test
+                  files: |
+                      target/package/swc_mut_cjs_exports-*.crate
 
             - name: publish crates
               run: cargo publish --token ${CRATES_TOKEN}
               env:
                   CRATES_TOKEN: ${{ secrets.CRATES_TOKEN }}
 
-            - name: publish npmjs
+    npm-publish:
+        if: startsWith(github.ref, 'refs/tags/v')
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+
+            - uses: actions/setup-node@v3
+              with:
+                  node-version-file: ".node-version"
+                  registry-url: "https://registry.npmjs.org"
+
+            - uses: pnpm/action-setup@v2
+              with:
+                  run_install: |
+                      - recursive: false
+                        args: [--ignore-scripts, --frozen-lockfile]
+
+            - run: pnpm build --release
+            - run: pnpm test
+            - run: pnpm pack
+
+            - name: Github Release
+              uses: softprops/action-gh-release@c9b46fe7aad9f02afd89b12450b780f52dacfb2d
+              with:
+                  files: |
+                      target/wasm32-unknown-unknown/release/swc_mut_cjs_exports.wasm
+                      swc_mut_cjs_exports-*.tgz
+
+            - name: NPM Release
               run: npm publish
               env:
                   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
