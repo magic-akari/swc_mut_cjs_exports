@@ -6,7 +6,10 @@
     "license": "MIT",
     "keywords": [
         "swc-plugin",
-        "jest"
+        "swc",
+        "jest",
+        "cjs",
+        "commonjs"
     ],
     "scripts": {
         "test:debug": "NODE_ENV=development pnpm build:debug && NODE_ENV=development jest",

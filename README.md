@@ -10,6 +10,8 @@ This is a SWC plugin to emit mutable CJS exports.
 
 This SWC plugin has only been tested for compatibility with jest. It should be used with `@swc/jest`.
 
+This project was previously called jest_workaround
+
 ## plugin version
 
 https://swc.rs/docs/plugin/selecting-swc-core
