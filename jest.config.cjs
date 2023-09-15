@@ -1,6 +1,6 @@
 const path = require("node:path");
 
-const isDev = process.env.NODE_ENV === "development";
+const isDev = process.env.WASM_ENV !== "release";
 
 const plugin = isDev
   ? path.resolve(

@@ -50,6 +50,8 @@ jobs:
 
             - run: pnpm build --release
             - run: pnpm test
+              env:
+                  WASM_ENV: release
             - run: pnpm pack
 
             - name: Github Release
