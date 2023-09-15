@@ -7,7 +7,6 @@ env:
     RUST_LOG: "debug"
     DIFF: 0
     RUST_MIN_STACK: 4194304
-    NODE_ENV: "development"
     CARGO_TERM_COLOR: always
 
 jobs:
