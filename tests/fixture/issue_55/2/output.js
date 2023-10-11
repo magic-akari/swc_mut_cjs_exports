@@ -9,6 +9,11 @@ Object.defineProperty(exports, "mod", {
     },
     configurable: true
 });
+Object.keys(mod1).forEach(function(key) {
+    if (key === "default" || key === "__esModule") return;
+    if (key in exports && exports[key] === mod1[key]) return;
+    exports[key] = mod1[key];
+});
 Object.defineProperty(exports, "foo", {
     enumerable: true,
     get () {
@@ -38,11 +43,6 @@ Object.defineProperty(exports, "baz", {
         baz = v;
     },
     configurable: true
-});
-Object.keys(mod1).forEach(function(key) {
-    if (key === "default" || key === "__esModule") return;
-    if (key in exports && exports[key] === mod1[key]) return;
-    exports[key] = mod1[key];
 });
 import * as mod from "./someModule";
 import * as mod1 from "./someModule";
