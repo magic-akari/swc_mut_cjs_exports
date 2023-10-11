@@ -1,6 +1,6 @@
 {
     "name": "swc_mut_cjs_exports",
-    "version": "0.79.69",
+    "version": "0.85.0",
     "description": "[SWC plugin] mutable CJS exports",
     "author": "magic-akari <akari.ccino@gmail.com>",
     "license": "MIT",
