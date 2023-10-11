@@ -211,6 +211,7 @@ impl TransformVisitor {
                                 span: DUMMY_SP,
                                 test: Box::new(
                                     member_expr!(DUMMY_SP, Object.prototype.hasOwnProperty)
+                                        .make_member(quote_ident!("call"))
                                         .as_call(
                                             DUMMY_SP,
                                             vec![self.exports().as_arg(), key.clone().as_arg()],
