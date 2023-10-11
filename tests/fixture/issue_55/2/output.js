@@ -41,7 +41,7 @@ Object.defineProperty(exports, "baz", {
 });
 Object.keys(mod1).forEach(function(key) {
     if (key === "default" || key === "__esModule") return;
-    if (Object.prototype.hasOwnProperty(exports, key)) return;
+    if (Object.prototype.hasOwnProperty.call(exports, key)) return;
     Object.defineProperty(exports, key, {
         enumerable: true,
         get: function() {
