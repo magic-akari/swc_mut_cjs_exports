@@ -38,6 +38,7 @@ impl VisitMut for TransformVisitor {
             export,
             export_all,
             export_decl_id,
+            ordered_exports,
             ..
         } = strip;
 
@@ -53,20 +54,34 @@ impl VisitMut for TransformVisitor {
 
             let exports = self.exports();
 
-            let export_obj_prop_list = export.into_iter().map(Into::into).collect();
+            for item in ordered_exports {
+                match item {
+                    local_export_strip::IdEnum::Id(item) => {
+                        stmts.push(self.export_all(item));
+                    }
+                    local_export_strip::IdEnum::Ident(item) => {
+                        let prop_list = export
+                            .clone()
+                            .into_iter()
+                            .filter(|x| x.1 == item)
+                            .map(Into::into)
+                            .collect();
 
-            stmts.extend(
-                emit_export_stmts(exports, export_obj_prop_list)
-                    .into_iter()
-                    .map(Into::into),
-            );
+                        stmts.extend(
+                            emit_export_stmts(exports.clone(), prop_list)
+                                .into_iter()
+                                .map(Into::into),
+                        )
+                    }
+                }
+            }
 
             if !self.export_decl_id.is_empty() {
                 n.visit_mut_children_with(self);
             }
+        } else {
+            stmts.extend(export_all.into_iter().map(|id| self.export_all(id)));
         }
-
-        stmts.extend(export_all.into_iter().map(|id| self.export_all(id)));
 
         stmts.extend(n.body.take());
 
