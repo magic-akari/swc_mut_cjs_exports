@@ -41,8 +41,14 @@ Object.defineProperty(exports, "baz", {
 });
 Object.keys(mod1).forEach(function(key) {
     if (key === "default" || key === "__esModule") return;
-    if (key in exports && exports[key] === mod1[key]) return;
-    exports[key] = mod1[key];
+    if (Object.prototype.hasOwnProperty.call(exports, key)) return;
+    Object.defineProperty(exports, key, {
+        enumerable: true,
+        get: function() {
+            return mod1[key];
+        },
+        configurable: true
+    });
 });
 import * as mod from "./someModule";
 import * as mod1 from "./someModule";

@@ -13,7 +13,7 @@ use swc_core::{
     },
     plugin::{plugin_transform, proxies::TransformPluginProgramMetadata},
 };
-use utils::emit_export_stmts;
+use utils::{emit_export_stmts, object_define_property};
 
 #[derive(Debug)]
 pub struct TransformVisitor {
@@ -149,9 +149,14 @@ impl TransformVisitor {
     /// ```JavaScript
     /// Object.keys(_mod).forEach(function (key) {
     ///     if (key === "default" || key === "__esModule") return;
-    ///     if (key in exports && exports[key] === _mod[key]) return;
-    ///     exports[key] = _mod[key];
-    /// });
+    ///     if (Object.prototype.hasOwnProperty.call(exports, key)) return;
+    ///     Object.defineProperty(exports, key, {
+    ///         enumerable: true,
+    ///         get: function () {
+    ///             return mod[key];
+    ///         },
+    ///         configurable: true
+    ///     });
     /// ```
     fn export_all(&self, id: Id) -> ModuleItem {
         let mod_name = Ident::from(id);
@@ -201,34 +206,16 @@ impl TransformVisitor {
                                 alt: None,
                             }
                             .into(),
-                            // if (key in exports && exports[key] === _mod[key]) return;
+                            // if (Object.prototype.hasOwnProperty.call(exports, key)) return;
                             IfStmt {
                                 span: DUMMY_SP,
-                                test: BinExpr {
-                                    span: DUMMY_SP,
-                                    op: op!("&&"),
-                                    left: BinExpr {
-                                        span: DUMMY_SP,
-                                        op: op!("in"),
-                                        left: key.clone().into(),
-                                        right: self.exports().into(),
-                                    }
-                                    .into(),
-                                    right: BinExpr {
-                                        span: DUMMY_SP,
-                                        op: op!("==="),
-                                        left: self
-                                            .exports()
-                                            .computed_member(quote_ident!("key"))
-                                            .into(),
-                                        right: mod_name
-                                            .clone()
-                                            .computed_member(quote_ident!("key"))
-                                            .into(),
-                                    }
-                                    .into(),
-                                }
-                                .into(),
+                                test: Box::new(
+                                    member_expr!(DUMMY_SP, Object.prototype.hasOwnProperty.call)
+                                        .as_call(
+                                            DUMMY_SP,
+                                            vec![self.exports().as_arg(), key.clone().as_arg()],
+                                        ),
+                                ),
                                 cons: Box::new(
                                     ReturnStmt {
                                         span: DUMMY_SP,
@@ -239,17 +226,49 @@ impl TransformVisitor {
                                 alt: None,
                             }
                             .into(),
-                            // exports[key] = _mod[key];
-                            mod_name
-                                .clone()
-                                .computed_member(quote_ident!("key"))
-                                .make_assign_to(
-                                    op!("="),
-                                    self.exports()
-                                        .computed_member(quote_ident!("key"))
-                                        .as_pat_or_expr(),
-                                )
-                                .into_stmt(),
+                            // Object.defineProperty(exports, key, {
+                            //     enumerable: true,
+                            //     get: function () {
+                            //       return mod[key];
+                            //     },
+                            //     configurable: true
+                            //   });
+                            object_define_property(
+                                self.exports().as_arg(),
+                                key.clone().as_arg(),
+                                ObjectLit {
+                                    span: DUMMY_SP,
+                                    props: vec![
+                                        PropOrSpread::Prop(Box::new(
+                                            KeyValueProp {
+                                                key: quote_ident!("enumerable").into(),
+                                                value: true.into(),
+                                            }
+                                            .into(),
+                                        )),
+                                        PropOrSpread::Prop(Box::new(
+                                            KeyValueProp {
+                                                key: quote_ident!("get").into(),
+                                                value: mod_name
+                                                    .clone()
+                                                    .computed_member(key.clone())
+                                                    .into_lazy_fn(vec![])
+                                                    .into(),
+                                            }
+                                            .into(),
+                                        )),
+                                        PropOrSpread::Prop(Box::new(
+                                            KeyValueProp {
+                                                key: quote_ident!("configurable").into(),
+                                                value: true.into(),
+                                            }
+                                            .into(),
+                                        )),
+                                    ],
+                                }
+                                .as_arg(),
+                            )
+                            .into_stmt(),
                         ],
                     }),
                     is_generator: false,
