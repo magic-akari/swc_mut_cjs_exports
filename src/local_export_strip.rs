@@ -12,18 +12,12 @@ use swc_core::{
 use crate::utils::{key_from_export_name, local_ident_from_export_name};
 
 type Export = IndexMap<(JsWord, Span), Ident>;
-#[derive(Debug)]
-pub enum IdEnum {
-    Ident(Ident),
-    Id(Id),
-}
 
 #[derive(Debug, Default)]
 pub(crate) struct LocalExportStrip {
     pub(crate) has_export_assign: bool,
     pub(crate) export: Export,
     pub(crate) export_all: AHashSet<Id>,
-    pub(crate) ordered_exports: Vec<IdEnum>,
     pub(crate) export_decl_id: AHashSet<Id>,
     export_default: Option<Stmt>,
 }
@@ -128,9 +122,7 @@ impl VisitMut for LocalExportStrip {
             Decl::Class(ClassDecl { ident, .. }) | Decl::Fn(FnDecl { ident, .. }) => {
                 let ident = ident.clone();
 
-                self.export
-                    .insert((ident.sym.clone(), ident.span), ident.clone());
-                self.ordered_exports.push(IdEnum::Ident(ident.clone()));
+                self.export.insert((ident.sym.clone(), ident.span), ident);
             }
 
             Decl::Var(v) => {
@@ -138,15 +130,10 @@ impl VisitMut for LocalExportStrip {
 
                 self.export_decl_id.extend(ids.iter().map(Ident::to_id));
 
-                self.export.extend(ids.clone().into_iter().map(|id| {
+                self.export.extend(ids.into_iter().map(|id| {
                     let ident = id.clone();
 
                     ((id.sym, id.span), ident)
-                }));
-                self.ordered_exports.extend(ids.into_iter().map(|id| {
-                    let ident = id.clone();
-
-                    IdEnum::Ident(ident)
                 }));
             }
             _ => {}
@@ -166,7 +153,7 @@ impl VisitMut for LocalExportStrip {
 
         let NamedExport { specifiers, .. } = n.take();
 
-        let specifier_iter = specifiers.into_iter().map(|e| match e {
+        self.export.extend(specifiers.into_iter().map(|e| match e {
             ExportSpecifier::Namespace(..) => {
                 unreachable!("`export *` without src is invalid")
             }
@@ -193,10 +180,7 @@ impl VisitMut for LocalExportStrip {
                     ((exported, orig.span), orig)
                 }
             }
-        });
-        self.export.extend(specifier_iter.clone());
-        self.ordered_exports
-            .extend(specifier_iter.clone().map(|x| IdEnum::Ident(x.1)))
+        }))
     }
 
     /// ```javascript
@@ -216,16 +200,12 @@ impl VisitMut for LocalExportStrip {
         match &mut n.decl {
             DefaultDecl::Class(class_expr) => {
                 if let Some(ident) = class_expr.ident.clone() {
-                    self.export
-                        .insert((js_word!("default"), n.span), ident.clone());
-                    self.ordered_exports.push(IdEnum::Ident(ident));
+                    self.export.insert((js_word!("default"), n.span), ident);
                 }
             }
             DefaultDecl::Fn(fn_expr) => {
                 if let Some(ident) = fn_expr.ident.clone() {
-                    self.export
-                        .insert((js_word!("default"), n.span), ident.clone());
-                    self.ordered_exports.push(IdEnum::Ident(ident));
+                    self.export.insert((js_word!("default"), n.span), ident);
                 }
             }
             DefaultDecl::TsInterfaceDecl(_) => {}
@@ -246,7 +226,6 @@ impl VisitMut for LocalExportStrip {
 
         self.export
             .insert((js_word!("default"), n.span), ident.clone());
-        self.ordered_exports.push(IdEnum::Ident(ident.clone()));
 
         self.export_default = Some(Stmt::Decl(
             n.expr
@@ -289,7 +268,6 @@ impl LocalExportStrip {
                 let key = key_from_export_name(&name);
                 let local = local_ident_from_export_name(name);
                 self.export.insert(key, local.clone());
-                self.ordered_exports.push(IdEnum::Ident(local.clone()));
 
                 Some(ImportSpecifier::Namespace(ImportStarAsSpecifier {
                     span,
@@ -300,7 +278,6 @@ impl LocalExportStrip {
                 let key = (exported.sym.clone(), exported.span);
                 let local = exported.private();
                 self.export.insert(key, local.clone());
-                self.ordered_exports.push(IdEnum::Ident(local.clone()));
 
                 Some(ImportSpecifier::Default(ImportDefaultSpecifier {
                     local,
@@ -322,7 +299,6 @@ impl LocalExportStrip {
                 let key = key_from_export_name(name);
                 let local = local_ident_from_export_name(orig.clone());
                 self.export.insert(key, local.clone());
-                self.ordered_exports.push(IdEnum::Ident(local.clone()));
 
                 Some(ImportSpecifier::Named(ImportNamedSpecifier {
                     span,
@@ -343,7 +319,6 @@ impl LocalExportStrip {
         let mod_name = private_ident!("mod");
 
         self.export_all.insert(mod_name.to_id());
-        self.ordered_exports.push(IdEnum::Id(mod_name.to_id()));
 
         let star = ImportStarAsSpecifier {
             span,
