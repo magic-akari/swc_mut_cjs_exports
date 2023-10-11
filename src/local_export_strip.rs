@@ -243,7 +243,7 @@ impl LocalExportStrip {
             specifiers,
             src,
             type_only,
-            asserts,
+            with,
         } = n;
 
         let src = src.unwrap();
@@ -258,7 +258,7 @@ impl LocalExportStrip {
             specifiers,
             src,
             type_only,
-            asserts,
+            with,
         }
     }
 
@@ -313,7 +313,7 @@ impl LocalExportStrip {
 
     fn convert_export_all(&mut self, e: ExportAll) -> ImportDecl {
         let ExportAll {
-            span, src, asserts, ..
+            span, src, with, ..
         } = e;
 
         let mod_name = private_ident!("mod");
@@ -330,7 +330,7 @@ impl LocalExportStrip {
             specifiers: vec![star.into()],
             src,
             type_only: false,
-            asserts,
+            with,
         }
     }
 }

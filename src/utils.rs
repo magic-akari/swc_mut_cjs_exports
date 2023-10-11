@@ -147,7 +147,7 @@ pub(crate) fn emit_export_stmts(exports: Ident, prop_list: Vec<ObjPropKeyIdent>)
         .map(|obj_prop| {
             object_define_enumerable_configurable(
                 exports.clone().as_arg(),
-                quote_str!(obj_prop.span(), obj_prop.key()).as_arg(),
+                quote_str!(obj_prop.span(), obj_prop.key().clone()).as_arg(),
                 prop_method_getter(obj_prop.ident().clone()).into(),
                 prop_method_setter(obj_prop.ident().clone()).into(),
             )
