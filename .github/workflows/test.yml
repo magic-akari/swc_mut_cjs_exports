@@ -1,94 +1,94 @@
 name: Test
 
 on:
-    push:
-        branches:
-            - "*"
-    pull_request:
-        types: ["opened", "reopened", "synchronize"]
+  push:
+    branches:
+      - "*"
+  pull_request:
+    types: ["opened", "reopened", "synchronize"]
 
 env:
-    CARGO_INCREMENTAL: 0
-    RUST_LOG: "debug"
-    DIFF: 0
-    RUST_MIN_STACK: 4194304
-    CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+  RUST_LOG: "debug"
+  DIFF: 0
+  RUST_MIN_STACK: 4194304
+  CARGO_TERM_COLOR: always
 
 jobs:
-    cargo-fmt:
-        name: Cargo fmt
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - run: cargo fmt -- --check
+  cargo-fmt:
+    name: Cargo fmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cargo fmt -- --check
 
-    cargo-clippy:
-        name: Cargo clippy
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - run: cargo clippy
+  cargo-clippy:
+    name: Cargo clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cargo clippy
 
-    cargo-test:
-        name: Cargo test
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
+  cargo-test:
+    name: Cargo test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-            - run: cargo check --all-targets
-            - run: cargo test
+      - run: cargo check --all-targets
+      - run: cargo test
 
-    node-test:
-        name: "@swc/core test"
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - uses: actions/setup-node@v3
-              with:
-                  node-version-file: ".node-version"
-            - uses: pnpm/action-setup@v2
+  node-test:
+    name: "@swc/core test"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: ".node-version"
+      - uses: pnpm/action-setup@v2
 
-            - name: Get pnpm store directory
-              shell: bash
-              run: |
-                  echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-            - uses: actions/cache@v3
-              name: Setup pnpm cache
-              with:
-                  path: ${{ env.STORE_PATH }}
-                  key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-                  restore-keys: |
-                      ${{ runner.os }}-pnpm-store-
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
-            - run: pnpm i --ignore-scripts --frozen-lockfile
-            - run: pnpm build
-            - run: pnpm test
+      - run: pnpm i --ignore-scripts --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm test
 
-    node-test-latest:
-        name: "@swc/core@latest test"
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
+  node-test-latest:
+    name: "@swc/core@latest test"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-            - uses: actions/setup-node@v3
-              with:
-                  node-version-file: ".node-version"
-            - uses: pnpm/action-setup@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: ".node-version"
+      - uses: pnpm/action-setup@v2
 
-            - name: Get pnpm store directory
-              shell: bash
-              run: |
-                  echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-            - uses: actions/cache@v3
-              name: Setup pnpm cache
-              with:
-                  path: ${{ env.STORE_PATH }}
-                  key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-                  restore-keys: |
-                      ${{ runner.os }}-pnpm-store-
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
-            - run: pnpm add -D --ignore-scripts @swc/core@latest @swc/jest@latest
-            - run: pnpm build
-            - run: pnpm test
+      - run: pnpm add -D --ignore-scripts @swc/core@latest @swc/jest@latest
+      - run: pnpm build
+      - run: pnpm test
