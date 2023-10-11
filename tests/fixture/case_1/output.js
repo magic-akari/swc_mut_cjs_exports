@@ -1,14 +1,4 @@
 export { };
-Object.defineProperty(exports, "child", {
-    enumerable: true,
-    get () {
-        return child;
-    },
-    set (v) {
-        child = v;
-    },
-    configurable: true
-});
 Object.defineProperty(exports, "callChild", {
     enumerable: true,
     get () {
@@ -16,6 +6,16 @@ Object.defineProperty(exports, "callChild", {
     },
     set (v) {
         callChild = v;
+    },
+    configurable: true
+});
+Object.defineProperty(exports, "child", {
+    enumerable: true,
+    get () {
+        return child;
+    },
+    set (v) {
+        child = v;
     },
     configurable: true
 });

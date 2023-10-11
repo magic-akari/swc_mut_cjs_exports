@@ -14,7 +14,6 @@ version     = "0.79.69"
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-indexmap = "2.0.2"
 swc_core = { version = "0.85.0", features = [
     "ecma_ast",
     "ecma_visit",

@@ -1,24 +1,4 @@
 export { };
-Object.defineProperty(exports, "mod", {
-    enumerable: true,
-    get () {
-        return mod;
-    },
-    set (v) {
-        mod = v;
-    },
-    configurable: true
-});
-Object.defineProperty(exports, "foo", {
-    enumerable: true,
-    get () {
-        return foo;
-    },
-    set (v) {
-        foo = v;
-    },
-    configurable: true
-});
 Object.defineProperty(exports, "bar", {
     enumerable: true,
     get () {
@@ -36,6 +16,26 @@ Object.defineProperty(exports, "baz", {
     },
     set (v) {
         baz = v;
+    },
+    configurable: true
+});
+Object.defineProperty(exports, "foo", {
+    enumerable: true,
+    get () {
+        return foo;
+    },
+    set (v) {
+        foo = v;
+    },
+    configurable: true
+});
+Object.defineProperty(exports, "mod", {
+    enumerable: true,
+    get () {
+        return mod;
+    },
+    set (v) {
+        mod = v;
     },
     configurable: true
 });

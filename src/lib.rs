@@ -53,10 +53,8 @@ impl VisitMut for TransformVisitor {
 
             let exports = self.exports();
 
-            let export_obj_prop_list = export.into_iter().map(Into::into).collect();
-
             stmts.extend(
-                emit_export_stmts(exports, export_obj_prop_list)
+                emit_export_stmts(exports, export)
                     .into_iter()
                     .map(Into::into),
             );

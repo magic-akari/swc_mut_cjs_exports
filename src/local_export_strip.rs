@@ -1,9 +1,10 @@
-use indexmap::IndexMap;
+use std::collections::BTreeMap;
+
 use swc_core::{
+    atoms::Atom,
     common::{collections::AHashSet, util::take::Take, Span, DUMMY_SP},
     ecma::{
         ast::*,
-        atoms::{js_word, JsWord},
         utils::{find_pat_ids, private_ident, ExprFactory, IdentExt},
         visit::{noop_visit_mut_type, VisitMut, VisitMutWith},
     },
@@ -11,7 +12,24 @@ use swc_core::{
 
 use crate::utils::{key_from_export_name, local_ident_from_export_name};
 
-type Export = IndexMap<(JsWord, Span), Ident>;
+pub type Export = BTreeMap<Atom, ExportItem>;
+
+#[derive(Debug)]
+pub struct ExportItem(Span, Ident);
+
+impl ExportItem {
+    pub fn new(export_name_span: Span, local_ident: Ident) -> Self {
+        Self(export_name_span, local_ident)
+    }
+
+    pub fn export_name_span(&self) -> Span {
+        self.0
+    }
+
+    pub fn into_local_ident(self) -> Ident {
+        self.1
+    }
+}
 
 #[derive(Debug, Default)]
 pub(crate) struct LocalExportStrip {
@@ -120,9 +138,10 @@ impl VisitMut for LocalExportStrip {
     fn visit_mut_export_decl(&mut self, n: &mut ExportDecl) {
         match &n.decl {
             Decl::Class(ClassDecl { ident, .. }) | Decl::Fn(FnDecl { ident, .. }) => {
-                let ident = ident.clone();
-
-                self.export.insert((ident.sym.clone(), ident.span), ident);
+                self.export.insert(
+                    ident.sym.clone(),
+                    ExportItem::new(ident.span, ident.clone()),
+                );
             }
 
             Decl::Var(v) => {
@@ -130,11 +149,11 @@ impl VisitMut for LocalExportStrip {
 
                 self.export_decl_id.extend(ids.iter().map(Ident::to_id));
 
-                self.export.extend(ids.into_iter().map(|id| {
-                    let ident = id.clone();
-
-                    ((id.sym, id.span), ident)
-                }));
+                self.export.extend(
+                    find_pat_ids::<_, Ident>(&v.decls)
+                        .into_iter()
+                        .map(|id| (id.sym.clone(), ExportItem::new(id.span, id))),
+                );
             }
             _ => {}
         };
@@ -169,15 +188,14 @@ impl VisitMut for LocalExportStrip {
                 };
 
                 if let Some(exported) = exported {
-                    let exported = match exported {
+                    let (export_name, export_name_span) = match exported {
                         ModuleExportName::Ident(Ident { span, sym, .. }) => (sym, span),
                         ModuleExportName::Str(Str { span, value, .. }) => (value, span),
                     };
 
-                    (exported, orig)
+                    (export_name, ExportItem::new(export_name_span, orig))
                 } else {
-                    let exported = orig.sym.clone();
-                    ((exported, orig.span), orig)
+                    (orig.sym.clone(), ExportItem::new(orig.span, orig))
                 }
             }
         }))
@@ -200,12 +218,14 @@ impl VisitMut for LocalExportStrip {
         match &mut n.decl {
             DefaultDecl::Class(class_expr) => {
                 if let Some(ident) = class_expr.ident.clone() {
-                    self.export.insert((js_word!("default"), n.span), ident);
+                    self.export
+                        .insert("default".into(), ExportItem::new(n.span, ident));
                 }
             }
             DefaultDecl::Fn(fn_expr) => {
                 if let Some(ident) = fn_expr.ident.clone() {
-                    self.export.insert((js_word!("default"), n.span), ident);
+                    self.export
+                        .insert("default".into(), ExportItem::new(n.span, ident));
                 }
             }
             DefaultDecl::TsInterfaceDecl(_) => {}
@@ -225,7 +245,7 @@ impl VisitMut for LocalExportStrip {
         let ident = private_ident!(n.span, "_default");
 
         self.export
-            .insert((js_word!("default"), n.span), ident.clone());
+            .insert("default".into(), ExportItem::new(n.span, ident.clone()));
 
         self.export_default = Some(Stmt::Decl(
             n.expr
@@ -265,9 +285,10 @@ impl LocalExportStrip {
     fn convert_export_specifier(&mut self, s: ExportSpecifier) -> Option<ImportSpecifier> {
         match s {
             ExportSpecifier::Namespace(ExportNamespaceSpecifier { span, name }) => {
-                let key = key_from_export_name(&name);
+                let (export_name, export_span) = key_from_export_name(&name);
                 let local = local_ident_from_export_name(name);
-                self.export.insert(key, local.clone());
+                self.export
+                    .insert(export_name, ExportItem::new(export_span, local.clone()));
 
                 Some(ImportSpecifier::Namespace(ImportStarAsSpecifier {
                     span,
@@ -275,9 +296,10 @@ impl LocalExportStrip {
                 }))
             }
             ExportSpecifier::Default(ExportDefaultSpecifier { exported }) => {
-                let key = (exported.sym.clone(), exported.span);
+                let (export_name, export_span) = (exported.sym.clone(), exported.span);
                 let local = exported.private();
-                self.export.insert(key, local.clone());
+                self.export
+                    .insert(export_name, ExportItem::new(export_span, local.clone()));
 
                 Some(ImportSpecifier::Default(ImportDefaultSpecifier {
                     local,
@@ -296,9 +318,10 @@ impl LocalExportStrip {
                 // export { x1 as "y-1" }
                 let name = exported.as_ref().unwrap_or(&orig);
 
-                let key = key_from_export_name(name);
+                let (export_name, export_span) = key_from_export_name(name);
                 let local = local_ident_from_export_name(orig.clone());
-                self.export.insert(key, local.clone());
+                self.export
+                    .insert(export_name, ExportItem::new(export_span, local.clone()));
 
                 Some(ImportSpecifier::Named(ImportNamedSpecifier {
                     span,

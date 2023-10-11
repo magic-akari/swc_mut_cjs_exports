@@ -1,44 +1,13 @@
 use swc_core::{
-    common::{Span, Spanned, DUMMY_SP},
+    atoms::Atom,
+    common::{Span, DUMMY_SP},
     ecma::{
         ast::*,
-        atoms::JsWord,
         utils::{member_expr, private_ident, quote_ident, quote_str, ExprFactory, IdentExt},
     },
 };
 
-/// {
-///     "key": ident,
-/// }
-pub(crate) struct ObjPropKeyIdent(JsWord, Span, Ident);
-
-impl From<((JsWord, Span), Ident)> for ObjPropKeyIdent {
-    fn from(((key, span), ident): ((JsWord, Span), Ident)) -> Self {
-        Self(key, span, ident)
-    }
-}
-
-impl From<(JsWord, Span, Ident)> for ObjPropKeyIdent {
-    fn from((key, span, ident): (JsWord, Span, Ident)) -> Self {
-        Self(key, span, ident)
-    }
-}
-
-impl Spanned for ObjPropKeyIdent {
-    fn span(&self) -> Span {
-        self.1
-    }
-}
-
-impl ObjPropKeyIdent {
-    pub fn key(&self) -> &JsWord {
-        &self.0
-    }
-
-    pub fn ident(&self) -> &Ident {
-        &self.2
-    }
-}
+use crate::local_export_strip::Export;
 
 /// ```javascript
 /// {
@@ -141,22 +110,25 @@ pub(crate) fn object_define_enumerable_configurable(
     )
 }
 
-pub(crate) fn emit_export_stmts(exports: Ident, prop_list: Vec<ObjPropKeyIdent>) -> Vec<Stmt> {
-    prop_list
+pub(crate) fn emit_export_stmts(exports: Ident, export: Export) -> Vec<Stmt> {
+    export
         .into_iter()
-        .map(|obj_prop| {
+        .map(|(export_name, export_item)| {
+            let prop_name = quote_str!(export_item.export_name_span(), export_name);
+            let local_ident = export_item.into_local_ident();
+
             object_define_enumerable_configurable(
                 exports.clone().as_arg(),
-                quote_str!(obj_prop.span(), obj_prop.key().clone()).as_arg(),
-                prop_method_getter(obj_prop.ident().clone()).into(),
-                prop_method_setter(obj_prop.ident().clone()).into(),
+                prop_name.as_arg(),
+                prop_method_getter(local_ident.clone()).into(),
+                prop_method_setter(local_ident).into(),
             )
             .into_stmt()
         })
         .collect()
 }
 
-pub(crate) fn key_from_export_name(n: &ModuleExportName) -> (JsWord, Span) {
+pub(crate) fn key_from_export_name(n: &ModuleExportName) -> (Atom, Span) {
     match n {
         ModuleExportName::Ident(ident) => (ident.sym.clone(), ident.span),
         ModuleExportName::Str(str) => (str.value.clone(), str.span),
