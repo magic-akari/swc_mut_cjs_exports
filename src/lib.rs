@@ -13,7 +13,7 @@ use swc_core::{
     },
     plugin::{plugin_transform, proxies::TransformPluginProgramMetadata},
 };
-use utils::emit_export_stmts;
+use utils::{emit_export_stmts, object_define_property};
 
 #[derive(Debug)]
 pub struct TransformVisitor {
@@ -234,68 +234,42 @@ impl TransformVisitor {
                             //     },
                             //     configurable: true
                             //   });
-                            member_expr!(DUMMY_SP, Object.defineProperty)
-                                .as_call(
-                                    DUMMY_SP,
-                                    vec![
-                                        self.exports().as_arg(),
-                                        key.clone().as_arg(),
-                                        ObjectLit {
-                                            span: DUMMY_SP,
-                                            props: vec![
-                                                PropOrSpread::Prop(Box::new(
-                                                    KeyValueProp {
-                                                        key: quote_ident!("enumerable").into(),
-                                                        value: Box::new(true.into()),
-                                                    }
+                            object_define_property(
+                                self.exports().as_arg(),
+                                key.clone().as_arg(),
+                                ObjectLit {
+                                    span: DUMMY_SP,
+                                    props: vec![
+                                        PropOrSpread::Prop(Box::new(
+                                            KeyValueProp {
+                                                key: quote_ident!("enumerable").into(),
+                                                value: true.into(),
+                                            }
+                                            .into(),
+                                        )),
+                                        PropOrSpread::Prop(Box::new(
+                                            KeyValueProp {
+                                                key: quote_ident!("get").into(),
+                                                value: mod_name
+                                                    .clone()
+                                                    .computed_member(key.clone())
+                                                    .into_lazy_fn(vec![])
                                                     .into(),
-                                                )),
-                                                PropOrSpread::Prop(Box::new(
-                                                    KeyValueProp {
-                                                        key: quote_ident!("get").into(),
-                                                        value: Box::new(
-                                                            Function {
-                                                                params: vec![],
-                                                                decorators: vec![],
-                                                                span: DUMMY_SP,
-                                                                body: Some(BlockStmt {
-                                                                    span: DUMMY_SP,
-                                                                    stmts: vec![ReturnStmt {
-                                                                        span: DUMMY_SP,
-                                                                        arg: Some(
-                                                                            mod_name
-                                                                                .clone()
-                                                                                .computed_member(
-                                                                                    key.clone(),
-                                                                                )
-                                                                                .into(),
-                                                                        ),
-                                                                    }
-                                                                    .into()],
-                                                                }),
-                                                                is_generator: false,
-                                                                is_async: false,
-                                                                type_params: None,
-                                                                return_type: None,
-                                                            }
-                                                            .into(),
-                                                        ),
-                                                    }
-                                                    .into(),
-                                                )),
-                                                PropOrSpread::Prop(Box::new(
-                                                    KeyValueProp {
-                                                        key: quote_ident!("configurable").into(),
-                                                        value: Box::new(true.into()),
-                                                    }
-                                                    .into(),
-                                                )),
-                                            ],
-                                        }
-                                        .as_arg(),
+                                            }
+                                            .into(),
+                                        )),
+                                        PropOrSpread::Prop(Box::new(
+                                            KeyValueProp {
+                                                key: quote_ident!("configurable").into(),
+                                                value: true.into(),
+                                            }
+                                            .into(),
+                                        )),
                                     ],
-                                )
-                                .into_stmt(),
+                                }
+                                .as_arg(),
+                            )
+                            .into_stmt(),
                         ],
                     }),
                     is_generator: false,
