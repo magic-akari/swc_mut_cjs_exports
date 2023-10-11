@@ -1,6 +1,6 @@
 [package]
 authors     = ["magic-akari <akari.ccino@gmail.com>"]
-description = "[SWC plugin] workaround for jest"
+description = "[SWC plugin] mutable CJS exports"
 edition     = "2021"
 homepage    = "https://github.com/magic-akari/swc_mut_cjs_exports"
 keywords    = ["swc-plugin", "swc", "jest", "cjs", "commonjs"]

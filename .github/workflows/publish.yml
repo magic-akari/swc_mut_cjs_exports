@@ -1,9 +1,9 @@
 name: Publish
 
 on:
-    create:
-        tags:
-            - "v*"
+  push:
+      tags:
+          - "v*"
 
 env:
     CARGO_INCREMENTAL: 0
