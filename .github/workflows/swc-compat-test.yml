@@ -28,7 +28,7 @@ jobs:
           if-no-files-found: error
           name: wasm
           path: |
-            target/**/*.wasm
+            target/*/debug/*.wasm
 
   test:
     name: Test with ${{ matrix.swc_package }}
