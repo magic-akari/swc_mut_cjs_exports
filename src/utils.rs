@@ -3,7 +3,7 @@ use swc_core::{
     common::{Span, DUMMY_SP},
     ecma::{
         ast::*,
-        utils::{member_expr, private_ident, quote_ident, quote_str, ExprFactory, IdentExt},
+        utils::{member_expr, private_ident, quote_ident, quote_str, ExprFactory},
     },
 };
 
@@ -136,11 +136,13 @@ pub(crate) fn key_from_export_name(n: &ModuleExportName) -> (Atom, Span) {
 }
 
 pub(crate) fn local_ident_from_export_name(n: ModuleExportName) -> Ident {
-    match n {
-        ModuleExportName::Ident(ident) => ident.private(),
-        ModuleExportName::Str(str) => match Ident::verify_symbol(&str.value) {
-            Ok(_) => private_ident!(str.value),
-            Err(s) => private_ident!(s),
-        },
+    let name = match n {
+        ModuleExportName::Ident(ident) => ident.sym,
+        ModuleExportName::Str(str) => str.value,
+    };
+
+    match Ident::verify_symbol(&name) {
+        Ok(_) => private_ident!(name),
+        Err(s) => private_ident!(s),
     }
 }
