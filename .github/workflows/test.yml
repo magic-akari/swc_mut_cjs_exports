@@ -38,35 +38,8 @@ jobs:
       - run: cargo check --all-targets
       - run: cargo test
 
-  node-test:
-    name: "@swc/core test"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: ".node-version"
-      - uses: pnpm/action-setup@v2
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - uses: actions/cache@v3
-        name: Setup pnpm cache
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - run: pnpm i --ignore-scripts --frozen-lockfile
-      - run: pnpm build
-      - run: pnpm test
-
-  node-test-latest:
-    name: "@swc/core@latest test"
+  swc-test:
+    name: SWC test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -74,21 +47,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: ".node-version"
+
       - uses: pnpm/action-setup@v2
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - uses: actions/cache@v3
-        name: Setup pnpm cache
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+          run_install: |
+            - args: [--frozen-lockfile, --strict-peer-dependencies]
 
-      - run: pnpm add -D --ignore-scripts @swc/core@latest @swc/jest@latest
       - run: pnpm build
       - run: pnpm test
