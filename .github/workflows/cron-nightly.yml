@@ -1,8 +1,8 @@
-name: with @swc/core@latest
+name: with @swc/core@nightly
 
 on:
   schedule:
-    - cron: "0 0,12 * * *"
+    - cron: "0 18 * * *"
 
 env:
   CARGO_INCREMENTAL: 0
@@ -13,9 +13,9 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  node-test-latest:
-    name: "@swc/core@latest test"
-    runs-on: ubuntu-latest
+  node-test-nightly:
+    name: "@swc/core@nightly test"
+    runs-on: ubuntu-nightly
     steps:
       - uses: actions/checkout@v4
 
@@ -37,6 +37,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - run: pnpm add -D --ignore-scripts @swc/core@latest @swc/jest@latest
+      - run: pnpm add -D --ignore-scripts @swc/core@nightly @swc/jest@latest
       - run: pnpm build
       - run: pnpm test

@@ -5,7 +5,8 @@
 
 [![Test](https://github.com/magic-akari/swc_mut_cjs_exports/actions/workflows/test.yml/badge.svg)](https://github.com/magic-akari/swc_mut_cjs_exports/actions/workflows/test.yml)
 [![SWC Compat Test](https://github.com/magic-akari/swc_mut_cjs_exports/actions/workflows/swc-compat-test.yml/badge.svg)](https://github.com/magic-akari/swc_mut_cjs_exports/actions/workflows/swc-compat-test.yml)
-[![with @swc/core@latest](https://github.com/magic-akari/swc_mut_cjs_exports/actions/workflows/cron.yml/badge.svg)](https://github.com/magic-akari/swc_mut_cjs_exports/actions/workflows/cron.yml)
+[![with @swc/core@latest](https://github.com/magic-akari/swc_mut_cjs_exports/actions/workflows/cron-latest.yml/badge.svg)](https://github.com/magic-akari/swc_mut_cjs_exports/actions/workflows/cron-latest.yml)
+[![with @swc/core@nightly](https://github.com/magic-akari/swc_mut_cjs_exports/actions/workflows/cron-nightly.yml/badge.svg)](https://github.com/magic-akari/swc_mut_cjs_exports/actions/workflows/cron-nightly.yml)
 
 This is a SWC plugin to emit mutable CJS exports.
 

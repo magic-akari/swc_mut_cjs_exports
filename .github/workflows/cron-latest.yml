@@ -1,0 +1,42 @@
+name: with @swc/core@latest
+
+on:
+  schedule:
+    - cron: "0 18 * * 1,3,5"
+
+env:
+  CARGO_INCREMENTAL: 0
+  RUST_LOG: "debug"
+  DIFF: 0
+  RUST_MIN_STACK: 4194304
+  NODE_ENV: "development"
+  CARGO_TERM_COLOR: always
+
+jobs:
+  node-test-latest:
+    name: "@swc/core@latest test"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".node-version"
+      - uses: pnpm/action-setup@v2
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - run: pnpm add -D --ignore-scripts @swc/core@latest @swc/jest@latest
+      - run: pnpm build
+      - run: pnpm test
