@@ -8,7 +8,7 @@ license     = "MIT"
 name        = "swc_mut_cjs_exports"
 readme      = "README.md"
 repository  = "https://github.com/magic-akari/swc_mut_cjs_exports"
-version     = "0.86.17"
+version     = "0.89.2"
 
 [lib]
 crate-type = ["cdylib", "lib"]
