@@ -77,7 +77,7 @@ impl VisitMut for TransformVisitor {
                 if self.export_decl_id.contains(&ref_ident.to_id()) {
                     *n = KeyValueProp {
                         key: ref_ident.clone().into(),
-                        value: Box::new(self.exports().make_member(ref_ident.take())),
+                        value: Box::new(self.exports().make_member(ref_ident.take()).into()),
                     }
                     .into()
                 }
@@ -90,7 +90,7 @@ impl VisitMut for TransformVisitor {
         match n {
             Expr::Ident(ref_ident) => {
                 if self.export_decl_id.contains(&ref_ident.to_id()) {
-                    *n = self.exports().make_member(ref_ident.take());
+                    *n = self.exports().make_member(ref_ident.take()).into();
                 }
             }
 

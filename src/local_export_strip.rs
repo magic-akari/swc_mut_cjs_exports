@@ -279,6 +279,7 @@ impl LocalExportStrip {
             src,
             type_only,
             with,
+            phase: Default::default(),
         }
     }
 
@@ -354,6 +355,7 @@ impl LocalExportStrip {
             src,
             type_only: false,
             with,
+            phase: Default::default(),
         }
     }
 }
