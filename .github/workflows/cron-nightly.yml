@@ -15,7 +15,7 @@ env:
 jobs:
   node-test-nightly:
     name: "@swc/core@nightly test"
-    runs-on: ubuntu-nightly
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
