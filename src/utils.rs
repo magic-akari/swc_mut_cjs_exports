@@ -38,7 +38,7 @@ pub(crate) fn prop_method_setter(ident: Ident) -> Prop {
     let body = BlockStmt {
         span: DUMMY_SP,
         stmts: vec![setter_param
-            .make_assign_to(op!("="), Pat::Ident(ident.clone().into()).into())
+            .make_assign_to(op!("="), ident.clone().into())
             .into_stmt()],
     };
 
