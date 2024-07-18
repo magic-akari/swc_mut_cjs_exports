@@ -5,7 +5,7 @@ use swc_core::{
     common::{collections::AHashSet, util::take::Take, Span, DUMMY_SP},
     ecma::{
         ast::*,
-        utils::{find_pat_ids, private_ident, ExprFactory, IdentExt},
+        utils::{find_pat_ids, private_ident, ExprFactory},
         visit::{noop_visit_mut_type, VisitMut, VisitMutWith},
     },
 };
@@ -298,7 +298,7 @@ impl LocalExportStrip {
             }
             ExportSpecifier::Default(ExportDefaultSpecifier { exported }) => {
                 let (export_name, export_span) = (exported.sym.clone(), exported.span);
-                let local = exported.private();
+                let local = exported.into_private();
                 self.export
                     .insert(export_name, ExportItem::new(export_span, local.clone()));
 

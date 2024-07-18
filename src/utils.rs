@@ -36,23 +36,18 @@ pub(crate) fn prop_method_setter(ident: Ident) -> Prop {
     let params = vec![setter_param.clone().into()];
 
     let body = BlockStmt {
-        span: DUMMY_SP,
         stmts: vec![setter_param
             .make_assign_to(op!("="), ident.clone().into())
             .into_stmt()],
+        ..Default::default()
     };
 
     MethodProp {
         key,
         function: Function {
             params,
-            decorators: Default::default(),
-            span: DUMMY_SP,
             body: Some(body),
-            is_generator: false,
-            is_async: false,
-            type_params: None,
-            return_type: None,
+            ..Default::default()
         }
         .into(),
     }
@@ -72,7 +67,7 @@ pub(super) fn object_define_property(
     prop_name: ExprOrSpread,
     descriptor: ExprOrSpread,
 ) -> Expr {
-    member_expr!(DUMMY_SP, Object.defineProperty)
+    member_expr!(Default::default(), DUMMY_SP, Object.defineProperty)
         .as_call(DUMMY_SP, vec![target, prop_name, descriptor])
 }
 

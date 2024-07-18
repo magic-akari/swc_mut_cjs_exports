@@ -3,7 +3,7 @@ mod utils;
 
 use local_export_strip::LocalExportStrip;
 use swc_core::{
-    common::{collections::AHashSet, util::take::Take, Mark, DUMMY_SP},
+    common::{collections::AHashSet, util::take::Take, Mark, SyntaxContext, DUMMY_SP},
     ecma::{
         ast::*,
         utils::{
@@ -77,7 +77,7 @@ impl VisitMut for TransformVisitor {
                 if self.export_decl_id.contains(&ref_ident.to_id()) {
                     *n = KeyValueProp {
                         key: ref_ident.clone().into(),
-                        value: Box::new(self.exports().make_member(ref_ident.take()).into()),
+                        value: Box::new(self.exports().make_member(ref_ident.take().into()).into()),
                     }
                     .into()
                 }
@@ -90,7 +90,7 @@ impl VisitMut for TransformVisitor {
         match n {
             Expr::Ident(ref_ident) => {
                 if self.export_decl_id.contains(&ref_ident.to_id()) {
-                    *n = self.exports().make_member(ref_ident.take()).into();
+                    *n = self.exports().make_member(ref_ident.take().into()).into();
                 }
             }
 
@@ -141,7 +141,10 @@ impl TransformVisitor {
     }
 
     fn exports(&self) -> Ident {
-        quote_ident!(DUMMY_SP.apply_mark(self.unresolved_mark), "exports")
+        quote_ident!(
+            SyntaxContext::empty().apply_mark(self.unresolved_mark),
+            "exports"
+        )
     }
 
     /// ```JavaScript
@@ -160,17 +163,15 @@ impl TransformVisitor {
         let mod_name = Ident::from(id);
         let key = private_ident!("key");
 
-        member_expr!(DUMMY_SP, Object.keys)
+        member_expr!(Default::default(), DUMMY_SP, Object.keys)
             .as_call(DUMMY_SP, vec![mod_name.clone().as_arg()])
             .make_member(quote_ident!("forEach"))
             .as_call(
                 DUMMY_SP,
                 vec![Function {
                     params: vec![key.clone().into()],
-                    decorators: vec![],
                     span: DUMMY_SP,
                     body: Some(BlockStmt {
-                        span: DUMMY_SP,
                         stmts: vec![
                             // if (key === "default" || key === "__esModule") return;
                             IfStmt {
@@ -208,11 +209,15 @@ impl TransformVisitor {
                             IfStmt {
                                 span: DUMMY_SP,
                                 test: Box::new(
-                                    member_expr!(DUMMY_SP, Object.prototype.hasOwnProperty.call)
-                                        .as_call(
-                                            DUMMY_SP,
-                                            vec![self.exports().as_arg(), key.clone().as_arg()],
-                                        ),
+                                    member_expr!(
+                                        Default::default(),
+                                        DUMMY_SP,
+                                        Object.prototype.hasOwnProperty.call
+                                    )
+                                    .as_call(
+                                        DUMMY_SP,
+                                        vec![self.exports().as_arg(), key.clone().as_arg()],
+                                    ),
                                 ),
                                 cons: Box::new(
                                     ReturnStmt {
@@ -268,11 +273,9 @@ impl TransformVisitor {
                             )
                             .into_stmt(),
                         ],
+                        ..Default::default()
                     }),
-                    is_generator: false,
-                    is_async: false,
-                    type_params: None,
-                    return_type: None,
+                    ..Default::default()
                 }
                 .as_arg()],
             )

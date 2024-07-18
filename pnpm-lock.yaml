@@ -6,7 +6,7 @@ settings:
 
 devDependencies:
   '@swc/core':
-    specifier: ^1.4.0
+    specifier: ^1.7.0
     version: 1.7.0
   '@swc/jest':
     specifier: ^0.2.36
