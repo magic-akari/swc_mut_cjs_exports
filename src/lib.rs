@@ -11,7 +11,7 @@ use swc_core::{
     },
     plugin::{plugin_transform, proxies::TransformPluginProgramMetadata},
 };
-use utils::{emit_export_stmts, object_define_property};
+use utils::{emit_export_stmts};
 
 #[derive(Debug)]
 pub struct TransformVisitor {
