@@ -35,7 +35,6 @@ impl ExportItem {
 pub(crate) struct LocalExportStrip {
     pub(crate) has_export_assign: bool,
     pub(crate) export: Export,
-    pub(crate) export_all: AHashSet<Id>,
     pub(crate) export_decl_id: AHashSet<Id>,
     export_default: Option<Stmt>,
 }
@@ -43,14 +42,10 @@ pub(crate) struct LocalExportStrip {
 impl VisitMut for LocalExportStrip {
     noop_visit_mut_type!();
 
-    fn visit_mut_script(&mut self, _: &mut Script) {
-        // skip
-    }
+    fn visit_mut_module_items(&mut self, n: &mut Vec<ModuleItem>) {
+        let mut list = Vec::with_capacity(n.len());
 
-    fn visit_mut_module(&mut self, n: &mut Module) {
-        let mut list = Vec::with_capacity(n.body.len());
-
-        for item in n.body.drain(..) {
+        for item in n.drain(..) {
             match item {
                 ModuleItem::Stmt(stmt) => list.push(stmt.into()),
 
@@ -72,14 +67,6 @@ impl VisitMut for LocalExportStrip {
                             },
                         ) => {
                             let decl: ModuleDecl = self.convert_export_decl(item).into();
-                            list.push(decl.into());
-                        }
-                        ModuleDecl::ExportAll(
-                            e @ ExportAll {
-                                type_only: false, ..
-                            },
-                        ) => {
-                            let decl: ModuleDecl = self.convert_export_all(e).into();
                             list.push(decl.into());
                         }
                         ModuleDecl::ExportDefaultDecl(ExportDefaultDecl {
@@ -119,7 +106,7 @@ impl VisitMut for LocalExportStrip {
             };
         }
 
-        n.body = list;
+        *n = list;
     }
 
     /// ```javascript
@@ -332,30 +319,6 @@ impl LocalExportStrip {
                 }))
             }
             _ => None,
-        }
-    }
-
-    fn convert_export_all(&mut self, e: ExportAll) -> ImportDecl {
-        let ExportAll {
-            span, src, with, ..
-        } = e;
-
-        let mod_name = private_ident!("mod");
-
-        self.export_all.insert(mod_name.to_id());
-
-        let star = ImportStarAsSpecifier {
-            span,
-            local: mod_name.clone(),
-        };
-
-        ImportDecl {
-            span,
-            specifiers: vec![star.into()],
-            src,
-            type_only: false,
-            with,
-            phase: Default::default(),
         }
     }
 }
