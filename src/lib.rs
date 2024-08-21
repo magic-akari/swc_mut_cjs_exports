@@ -6,9 +6,7 @@ use swc_core::{
     common::{collections::AHashSet, util::take::Take, Mark, SyntaxContext, DUMMY_SP},
     ecma::{
         ast::*,
-        utils::{
-            member_expr, private_ident, quote_ident, quote_str, ExprFactory, IntoIndirectCall,
-        },
+        utils::{quote_ident, ExprFactory, IntoIndirectCall},
         visit::{as_folder, noop_visit_mut_type, FoldWith, VisitMut, VisitMutWith},
     },
     plugin::{plugin_transform, proxies::TransformPluginProgramMetadata},
@@ -25,25 +23,20 @@ pub struct TransformVisitor {
 impl VisitMut for TransformVisitor {
     noop_visit_mut_type!();
 
-    fn visit_mut_script(&mut self, _: &mut Script) {
-        // skip
-    }
-
-    fn visit_mut_module(&mut self, n: &mut Module) {
+    fn visit_mut_module_items(&mut self, n: &mut Vec<ModuleItem>) {
         let mut strip = LocalExportStrip::default();
         n.visit_mut_with(&mut strip);
 
         let LocalExportStrip {
             has_export_assign,
             export,
-            export_all,
             export_decl_id,
             ..
         } = strip;
 
         self.export_decl_id = export_decl_id;
 
-        let mut stmts: Vec<ModuleItem> = Vec::with_capacity(n.body.len() + 1);
+        let mut stmts: Vec<ModuleItem> = Vec::with_capacity(n.len() + 1);
 
         if !has_export_assign && !export.is_empty() {
             // keep module env
@@ -64,11 +57,9 @@ impl VisitMut for TransformVisitor {
             }
         }
 
-        stmts.extend(export_all.into_iter().map(|id| self.export_all(id)));
+        stmts.extend(n.take());
 
-        stmts.extend(n.body.take());
-
-        n.body = stmts;
+        *n = stmts;
     }
 
     fn visit_mut_prop(&mut self, n: &mut Prop) {
@@ -145,142 +136,6 @@ impl TransformVisitor {
             SyntaxContext::empty().apply_mark(self.unresolved_mark),
             "exports"
         )
-    }
-
-    /// ```JavaScript
-    /// Object.keys(_mod).forEach(function (key) {
-    ///     if (key === "default" || key === "__esModule") return;
-    ///     if (Object.prototype.hasOwnProperty.call(exports, key)) return;
-    ///     Object.defineProperty(exports, key, {
-    ///         enumerable: true,
-    ///         get: function () {
-    ///             return mod[key];
-    ///         },
-    ///         configurable: true
-    ///     });
-    /// ```
-    fn export_all(&self, id: Id) -> ModuleItem {
-        let mod_name = Ident::from(id);
-        let key = private_ident!("key");
-
-        member_expr!(Default::default(), DUMMY_SP, Object.keys)
-            .as_call(DUMMY_SP, vec![mod_name.clone().as_arg()])
-            .make_member(quote_ident!("forEach"))
-            .as_call(
-                DUMMY_SP,
-                vec![Function {
-                    params: vec![key.clone().into()],
-                    span: DUMMY_SP,
-                    body: Some(BlockStmt {
-                        stmts: vec![
-                            // if (key === "default" || key === "__esModule") return;
-                            IfStmt {
-                                span: DUMMY_SP,
-                                test: BinExpr {
-                                    span: DUMMY_SP,
-                                    op: op!("||"),
-                                    left: BinExpr {
-                                        span: DUMMY_SP,
-                                        op: op!("==="),
-                                        left: key.clone().into(),
-                                        right: quote_str!("default").into(),
-                                    }
-                                    .into(),
-                                    right: BinExpr {
-                                        span: DUMMY_SP,
-                                        op: op!("==="),
-                                        left: key.clone().into(),
-                                        right: quote_str!("__esModule").into(),
-                                    }
-                                    .into(),
-                                }
-                                .into(),
-                                cons: Box::new(
-                                    ReturnStmt {
-                                        span: DUMMY_SP,
-                                        arg: None,
-                                    }
-                                    .into(),
-                                ),
-                                alt: None,
-                            }
-                            .into(),
-                            // if (Object.prototype.hasOwnProperty.call(exports, key)) return;
-                            IfStmt {
-                                span: DUMMY_SP,
-                                test: Box::new(
-                                    member_expr!(
-                                        Default::default(),
-                                        DUMMY_SP,
-                                        Object.prototype.hasOwnProperty.call
-                                    )
-                                    .as_call(
-                                        DUMMY_SP,
-                                        vec![self.exports().as_arg(), key.clone().as_arg()],
-                                    ),
-                                ),
-                                cons: Box::new(
-                                    ReturnStmt {
-                                        span: DUMMY_SP,
-                                        arg: None,
-                                    }
-                                    .into(),
-                                ),
-                                alt: None,
-                            }
-                            .into(),
-                            // Object.defineProperty(exports, key, {
-                            //     enumerable: true,
-                            //     get: function () {
-                            //       return mod[key];
-                            //     },
-                            //     configurable: true
-                            //   });
-                            object_define_property(
-                                self.exports().as_arg(),
-                                key.clone().as_arg(),
-                                ObjectLit {
-                                    span: DUMMY_SP,
-                                    props: vec![
-                                        PropOrSpread::Prop(Box::new(
-                                            KeyValueProp {
-                                                key: quote_ident!("enumerable").into(),
-                                                value: true.into(),
-                                            }
-                                            .into(),
-                                        )),
-                                        PropOrSpread::Prop(Box::new(
-                                            KeyValueProp {
-                                                key: quote_ident!("get").into(),
-                                                value: mod_name
-                                                    .clone()
-                                                    .computed_member(key.clone())
-                                                    .into_lazy_fn(vec![])
-                                                    .into(),
-                                            }
-                                            .into(),
-                                        )),
-                                        PropOrSpread::Prop(Box::new(
-                                            KeyValueProp {
-                                                key: quote_ident!("configurable").into(),
-                                                value: true.into(),
-                                            }
-                                            .into(),
-                                        )),
-                                    ],
-                                }
-                                .as_arg(),
-                            )
-                            .into_stmt(),
-                        ],
-                        ..Default::default()
-                    }),
-                    ..Default::default()
-                }
-                .as_arg()],
-            )
-            .into_stmt()
-            .into()
     }
 }
 
