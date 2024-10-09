@@ -44,6 +44,27 @@ module.exports = {
 };
 ```
 
+Alternative implementation without .swcrc file
+
+```js
+// jest.config.js
+
+module.exports = {
+  transform: {
+    '^.+\\.(t|j)sx?$': [
+      '@swc/jest',
+      {
+        jsc: {
+          experimental: {
+            plugins: [['swc_mut_cjs_exports', {}]],
+          },
+        },
+      },
+    ],
+  },
+}
+```
+
 Make sure that `module.type` is `commonjs` in your `.swcrc` since this plugin
 does not touch non-workaround parts, such as import statements.
 
