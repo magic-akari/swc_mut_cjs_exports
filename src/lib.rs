@@ -7,7 +7,8 @@ use swc_core::{
     ecma::{
         ast::*,
         utils::{
-            member_expr, private_ident, quote_ident, quote_str, ExprFactory, IntoIndirectCall,
+            for_each_binding_ident, member_expr, private_ident, quote_ident, quote_str,
+            ExprFactory, IntoIndirectCall,
         },
         visit::{as_folder, noop_visit_mut_type, FoldWith, VisitMut, VisitMutWith},
     },
@@ -69,6 +70,17 @@ impl VisitMut for TransformVisitor {
         stmts.extend(n.body.take());
 
         n.body = stmts;
+    }
+
+    fn visit_mut_function(&mut self, node: &mut Function) {
+        let export_decl_id = self.export_decl_id.clone();
+
+        for_each_binding_ident(&node.params, |ident| {
+            self.export_decl_id.remove(&ident.id.to_id());
+        });
+
+        node.visit_mut_children_with(self);
+        self.export_decl_id = export_decl_id;
     }
 
     fn visit_mut_prop(&mut self, n: &mut Prop) {
