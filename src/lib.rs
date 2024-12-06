@@ -10,7 +10,7 @@ use swc_core::{
             for_each_binding_ident, member_expr, private_ident, quote_ident, quote_str,
             ExprFactory, IntoIndirectCall,
         },
-        visit::{as_folder, noop_visit_mut_type, FoldWith, VisitMut, VisitMutWith},
+        visit::{noop_visit_mut_type, VisitMut, VisitMutWith},
     },
     plugin::{plugin_transform, proxies::TransformPluginProgramMetadata},
 };
@@ -297,8 +297,10 @@ impl TransformVisitor {
 }
 
 #[plugin_transform]
-pub fn process_transform(program: Program, metadata: TransformPluginProgramMetadata) -> Program {
-    program.fold_with(&mut as_folder(TransformVisitor::new(
-        metadata.unresolved_mark,
-    )))
+pub fn process_transform(
+    mut program: Program,
+    metadata: TransformPluginProgramMetadata,
+) -> Program {
+    program.visit_mut_with(&mut TransformVisitor::new(metadata.unresolved_mark));
+    program
 }

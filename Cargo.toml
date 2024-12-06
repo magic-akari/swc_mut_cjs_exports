@@ -14,7 +14,7 @@ version     = "0.109.1"
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-swc_core = { version = "0.109.1", features = [
+swc_core = { version = "8.0.1", features = [
     "ecma_ast",
     "ecma_visit",
     "swc_plugin",
@@ -25,7 +25,7 @@ swc_core = { version = "0.109.1", features = [
 
 
 [dev-dependencies]
-swc_core = { version = "0.109.1", features = ["testing_transform"] }
+swc_core = { version = "8.0.1", features = ["testing_transform"] }
 testing  = "0.42.1"
 
 [profile.release]
