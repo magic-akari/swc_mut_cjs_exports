@@ -1,23 +1,24 @@
 use std::path::PathBuf;
 use swc_core::{
-    common::{chain, Mark},
+    common::Mark,
     ecma::{
+        ast::Pass,
         transforms::{
             base::resolver,
             testing::{test, test_fixture},
         },
-        visit::{as_folder, Fold},
+        visit::visit_mut_pass,
     },
 };
 use swc_mut_cjs_exports::TransformVisitor;
 
-fn tr() -> impl Fold {
+fn tr() -> impl Pass {
     let unresolved_mark = Mark::new();
     let top_level_mark = Mark::new();
 
-    chain!(
+    (
         resolver(unresolved_mark, top_level_mark, false),
-        as_folder(TransformVisitor::new(unresolved_mark)),
+        visit_mut_pass(TransformVisitor::new(unresolved_mark)),
     )
 }
 
