@@ -37,7 +37,7 @@ jobs:
     strategy:
       matrix:
         swc_package:
-          - "@swc/core@1.7.0"
+          - "@swc/core@1.10.0"
           - "@swc/core@latest"
     steps:
       - uses: actions/checkout@v4
