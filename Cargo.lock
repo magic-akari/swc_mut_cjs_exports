@@ -1608,7 +1608,7 @@ dependencies = [
 
 [[package]]
 name = "swc_mut_cjs_exports"
-version = "8.0.1"
+version = "8.0.2"
 dependencies = [
  "swc_core",
  "testing 4.0.0",
