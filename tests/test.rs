@@ -3,6 +3,7 @@ use swc_core::{
     common::Mark,
     ecma::{
         ast::Pass,
+        parser::{EsSyntax, Syntax},
         transforms::{
             base::resolver,
             testing::{test, test_fixture},
@@ -23,12 +24,21 @@ fn tr() -> impl Pass {
 }
 
 #[testing::fixture("tests/fixture/**/input.js")]
+#[testing::fixture("tests/fixture/**/input.jsx")]
 fn test(input: PathBuf) {
     let dir = input.parent().unwrap().to_path_buf();
-    let output = dir.join("output.js");
+    let jsx = input.extension().unwrap() == "jsx";
+    let output = if jsx {
+        dir.join("output.jsx")
+    } else {
+        dir.join("output.js")
+    };
 
     test_fixture(
-        Default::default(),
+        Syntax::Es(EsSyntax {
+            jsx,
+            ..Default::default()
+        }),
         &|_| tr(),
         &input,
         &output,

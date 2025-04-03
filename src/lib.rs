@@ -142,6 +142,24 @@ impl VisitMut for TransformVisitor {
             _ => n.visit_mut_children_with(self),
         }
     }
+
+    fn visit_mut_jsx_element_name(&mut self, n: &mut JSXElementName) {
+        match n {
+            JSXElementName::Ident(ref_ident) => {
+                if self.export_decl_id.contains(&ref_ident.to_id()) {
+                    *n = JSXElementName::JSXMemberExpr(
+                        JSXMemberExpr {
+                            span: DUMMY_SP,
+                            obj: self.exports().into(),
+                            prop: ref_ident.clone().into(),
+                        }
+                        .into(),
+                    );
+                }
+            }
+            _ => n.visit_mut_children_with(self),
+        };
+    }
 }
 
 impl TransformVisitor {
