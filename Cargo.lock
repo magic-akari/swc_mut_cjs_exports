@@ -1617,7 +1617,7 @@ dependencies = [
 
 [[package]]
 name = "swc_mut_cjs_exports"
-version = "8.0.2"
+version = "10.7.0"
 dependencies = [
  "rustc-hash 2.1.1",
  "swc_core",
