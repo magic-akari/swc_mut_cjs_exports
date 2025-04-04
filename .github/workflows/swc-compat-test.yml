@@ -16,7 +16,7 @@ env:
 
 jobs:
   wasm-build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v2
@@ -32,7 +32,7 @@ jobs:
 
   test:
     name: Test with ${{ matrix.swc_package }}
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     needs: wasm-build
     strategy:
       fail-fast: false

@@ -17,21 +17,21 @@ env:
 jobs:
   cargo-fmt:
     name: Cargo fmt
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - run: cargo fmt -- --check
 
   cargo-clippy:
     name: Cargo clippy
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
       - run: cargo clippy
 
   cargo-test:
     name: Cargo test
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -40,7 +40,7 @@ jobs:
 
   swc-test:
     name: SWC test
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
 

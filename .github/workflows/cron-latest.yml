@@ -15,7 +15,7 @@ env:
 jobs:
   node-test-latest:
     name: "@swc/core@latest test"
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
 
