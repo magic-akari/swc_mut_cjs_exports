@@ -1,8 +1,9 @@
 use std::collections::BTreeMap;
 
+use rustc_hash::FxHashSet;
 use swc_core::{
     atoms::Atom,
-    common::{collections::AHashSet, util::take::Take, Span, DUMMY_SP},
+    common::{util::take::Take, Span, DUMMY_SP},
     ecma::{
         ast::*,
         utils::{find_pat_ids, private_ident, ExprFactory},
@@ -35,8 +36,8 @@ impl ExportItem {
 pub(crate) struct LocalExportStrip {
     pub(crate) has_export_assign: bool,
     pub(crate) export: Export,
-    pub(crate) export_all: AHashSet<Id>,
-    pub(crate) export_decl_id: AHashSet<Id>,
+    pub(crate) export_all: FxHashSet<Id>,
+    pub(crate) export_decl_id: FxHashSet<Id>,
     export_default: Option<Stmt>,
 }
 

@@ -2,8 +2,9 @@ mod local_export_strip;
 mod utils;
 
 use local_export_strip::LocalExportStrip;
+use rustc_hash::FxHashSet;
 use swc_core::{
-    common::{collections::AHashSet, util::take::Take, Mark, SyntaxContext, DUMMY_SP},
+    common::{util::take::Take, Mark, SyntaxContext, DUMMY_SP},
     ecma::{
         ast::*,
         utils::{
@@ -20,7 +21,7 @@ use utils::{emit_export_stmts, object_define_property};
 pub struct TransformVisitor {
     unresolved_mark: Mark,
 
-    export_decl_id: AHashSet<Id>,
+    export_decl_id: FxHashSet<Id>,
 }
 
 impl VisitMut for TransformVisitor {
