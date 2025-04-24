@@ -13,7 +13,7 @@ devDependencies:
     version: 0.2.37(@swc/core@1.10.0)
   '@types/jest':
     specifier: ^29.5.11
-    version: 29.5.12
+    version: 29.5.14
   jest:
     specifier: ^29.7.0
     version: 29.7.0
@@ -828,8 +828,8 @@ packages:
       '@types/istanbul-lib-report': 3.0.3
     dev: true
 
-  /@types/jest@29.5.12:
-    resolution: {integrity: sha512-eDC8bTvT/QhYdxJAulQikueigY5AsdBRH2yDKW3yveW7svY3+DzN84/2NUgkw10RTiJbWqZrTtoGVdYlvFJdLw==}
+  /@types/jest@29.5.14:
+    resolution: {integrity: sha512-ZN+4sdnLUbo8EVvVc2ao0GFW6oVrQRPn4K2lglySj7APvSrgzxHiNNK99us4WDMi57xxA2yggblIAMNhXOotLQ==}
     dependencies:
       expect: 29.7.0
       pretty-format: 29.7.0
@@ -2103,7 +2103,7 @@ packages:
     dependencies:
       '@jest/schemas': 29.6.3
       ansi-styles: 5.2.0
-      react-is: 18.2.0
+      react-is: 18.3.1
     dev: true
 
   /prompts@2.4.2:
@@ -2118,8 +2118,8 @@ packages:
     resolution: {integrity: sha512-LA0Y9kxMYv47GIPJy6MI84fqTd2HmYZI83W/kM/SkKfDlajnZYfmXFTxkbY+xSBPkLJxltMa9hIkmdc29eguMA==}
     dev: true
 
-  /react-is@18.2.0:
-    resolution: {integrity: sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==}
+  /react-is@18.3.1:
+    resolution: {integrity: sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==}
     dev: true
 
   /require-directory@2.1.1:
