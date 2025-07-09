@@ -16,7 +16,7 @@
         "test": "jest",
         "prepack": "cp -rf target/wasm32-unknown-unknown/release/swc_mut_cjs_exports.wasm ."
     },
-    "packageManager": "pnpm@8.15.5",
+    "packageManager": "pnpm@10.13.1",
     "main": "swc_mut_cjs_exports.wasm",
     "files": [
         "src",
