@@ -21,7 +21,7 @@ jobs:
         run: cargo publish --dry-run
 
       - name: Github Release
-        uses: softprops/action-gh-release@9d7c94cfd0a1f3ed45544c887983e9fa900f0564
+        uses: softprops/action-gh-release@f0b3259de20cfa7751a020162b49d79d4fd66a77
         with:
           files: |
             target/package/swc_mut_cjs_exports-*.crate
@@ -55,7 +55,7 @@ jobs:
       - run: pnpm pack
 
       - name: Github Release
-        uses: softprops/action-gh-release@9d7c94cfd0a1f3ed45544c887983e9fa900f0564
+        uses: softprops/action-gh-release@f0b3259de20cfa7751a020162b49d79d4fd66a77
         with:
           files: |
             target/wasm32-unknown-unknown/release/swc_mut_cjs_exports.wasm
