@@ -1,5 +1,8 @@
 # [SWC plugin] mutable CJS exports
 
+> [!IMPORTANT]  
+> This plugin has been migrated to the [swc official plugin repository](https://github.com/swc-project/plugins) and is available as [`@swc-contrib/mut-cjs-exports` on npm](https://www.npmjs.com/package/@swc-contrib/mut-cjs-exports).
+
 [![Crates.io](https://img.shields.io/crates/v/swc_mut_cjs_exports)](https://crates.io/crates/swc_mut_cjs_exports)
 [![npm](https://img.shields.io/npm/v/swc_mut_cjs_exports)](https://www.npmjs.com/package/swc_mut_cjs_exports)
 
@@ -16,7 +19,25 @@ This project was previously called jest_workaround
 
 ## plugin version
 
-https://swc.rs/docs/plugin/selecting-swc-core
+| swc_mut_cjs_exports | @swc/core version |
+| ------------------- | ----------------- |
+| 0.79.69             | >=1.3.78 <1.3.81  |
+| 0.85.0              | >=1.3.81 <1.3.106 |
+| 0.86.17             | >=1.3.81 <1.3.106 |
+| 0.89.2              | >=1.3.106 <1.4.0  |
+| 0.90.3              | 1.4.0             |
+| 0.90.6              | >=1.4.0 <1.7.0    |
+| 0.90.24             | >=1.4.0 <1.7.0    |
+| 0.99.0              | >=1.7.0 <1.7.28   |
+| 0.109.1             | >=1.7.28 <1.10.0  |
+| 8.0.1               | >=1.10.0 <1.13.0  |
+| 8.0.2               | >=1.10.0 <1.13.0  |
+| 10.7.0              | >=1.10.0 <1.13.0  |
+
+> [!NOTE]  
+> The version of this plugin after 10.7.0 is migrated to the [swc official plugin repository](https://github.com/swc-project/plugins) and is available as [`@swc-contrib/mut-cjs-exports` on npm](https://www.npmjs.com/package/@swc-contrib/mut-cjs-exports).
+>
+> Please refer to https://swc.rs/docs/plugin/selecting-swc-core for version compatibility.
 
 ## usage
 
